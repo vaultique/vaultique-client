@@ -1,0 +1,42 @@
+name: Feature Branch Build
+
+on:
+  push:
+    branches:
+      - 'feature/**'  # 监听所有 feature 分支的变动
+
+jobs:
+  build-windows:
+    runs-on: windows-latest  # 指定 Windows 平台
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        target: x86_64-pc-windows-msvc  # 指定 Windows 目标
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install frontend deps
+      run: npm ci  # 更严格的依赖锁定
+
+    - name: Build Tauri
+      uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tagName: ${{ github.ref_name }}
+        releaseName: "Windows Build ${GITHUB_REF#refs/heads/}"
+        target: x86_64-pc-windows-msvc  # 强制指定目标平台
+        publish: true
+        releaseDraft: false
+        artifactName: "app_${GITHUB_RUN_ID}.msi"

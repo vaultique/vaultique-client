@@ -1,0 +1,193 @@
+:root {
+  // theme color
+  --hebin-color-primary: #268EED;
+  --hebin-color-primary-light-1: #4BA6F1;
+  --hebin-color-primary-light-2: #70BDF4;
+  --hebin-color-primary-light-3: #97D3F8;
+  --hebin-color-primary-light-4: #BFE6FB;
+  --hebin-color-primary-light-5: #E8F8FF;
+  --hebin-color-primary-dark-1: #186BC5;
+  --hebin-color-primary-dark-2: #0D4D9D;
+  --hebin-color-primary-dark-3: #053375;
+  --hebin-color-primary-dark-4: #001D4D;
+
+  --hebin-color-major: #17CBCC;
+  --hebin-color-major-light-1: #3AD6D1;
+  --hebin-color-major-light-2: #61E0D8;
+  --hebin-color-major-light-3: #8BEBE1;
+  --hebin-color-major-light-4: #B8F5ED;
+  --hebin-color-major-light-5: #E8FFFB;
+  --hebin-color-major-dark-1: #0FA7AC;
+  --hebin-color-major-dark-2: #08838C;
+  --hebin-color-major-dark-3: #03626C;
+  --hebin-color-major-dark-4: #00424D;
+
+  --hebin-color-error: #D40000;
+  --hebin-color-error-light-1: #DD2E28;
+  --hebin-color-error-light-2: #E55D53;
+  --hebin-color-error-light-3: #EE8D82;
+  --hebin-color-error-light-4: #F6BCB3;
+  --hebin-color-error-light-5: #FFECE8;
+  --hebin-color-error-dark-1: #B20006;
+  --hebin-color-error-dark-2: #90000A;
+  --hebin-color-error-dark-3: #6E000B;
+  --hebin-color-error-dark-4: #4D000A;
+
+  --hebin-color-warning: #ED6A0C;
+  --hebin-color-warning-light-1: #F18A36;
+  --hebin-color-warning-light-2: #F4A860;
+  --hebin-color-warning-light-3: #F8C48C;
+  --hebin-color-warning-light-4: #FBDEBA;
+  --hebin-color-warning-light-5: #FFF5E8;
+  --hebin-color-warning-dark-1: #C55007;
+  --hebin-color-warning-dark-2: #9D3904;
+  --hebin-color-warning-dark-3: #752601;
+  --hebin-color-warning-dark-4: #4D1600;
+
+  --hebin-color-dark: #9AAED6;
+  --hebin-color-dark-light-1: #A8BCDE;
+  --hebin-color-dark-light-2: #B7CAE6;
+  --hebin-color-dark-light-3: #C7D8EF;
+  --hebin-color-dark-light-4: #D7E6F7;
+  --hebin-color-dark-light-5: #E8F4FF;
+  --hebin-color-dark-dark-1: #415881;
+  --hebin-color-dark-dark-2: #273A61;
+  --hebin-color-dark-dark-3: #0F1E37;
+  --hebin-color-dark-dark-4: #020B1A;
+
+  // 中性色
+  --hebin-color-neutral-1: #F7F8FA; // 背景色
+  --hebin-color-neutral-2: #F2F3F5; // 背景色
+  --hebin-color-neutral-3: #E5E6EB; // 边框、线色
+  --hebin-color-neutral-4: #C9CDD4; // 边框、线色
+  --hebin-color-neutral-5: #A9AEB8; // 文字色，指 disable、提示文字等
+  --hebin-color-neutral-6: #86909C; // 文字色，指辅助、说明文字
+  --hebin-color-neutral-7: #272E3B; // 文字色，指主文字2
+  --hebin-color-neutral-8: #1D2129; // 文字色，指主文字1
+  --hebin-color-neutral-9: #000000; // 黑色
+  --hebin-color-neutral-10: #FFFFFF; // 白色
+
+  // border
+  --hebin-border-radius-s: 4px;
+  --hebin-border-radius-m: 8px;
+  --hebin-border-radius-l: 16px;
+  --hebin-border-radius-r: 50%;
+
+  // font size
+  --hebin-font-size-mark: 12px;
+  --hebin-font-size-aux: 14px;
+  --hebin-font-size-text: 16px;
+  --hebin-font-size-title-s: 20px;
+  --hebin-font-size-title-m: 26px;
+  --hebin-font-size-title-l: 34px;
+  --hebin-font-size-title-xl: 44px;
+
+  // shadow
+  --hebin-shadow-s1: 0px 0px 4px 0px #2e3b6133;
+  --hebin-shadow-s2: 0px 4px 16px 0px #c9cdd480;
+  --hebin-shadow-s3: 0px 4px 36px 0px #c9cdd480;
+}
+
+.hebin-drop-down {
+  --radius: var(--hebin-border-radius-s);
+  --background-color: var(--hebin-color-neutral-10);
+}
+
+.hebin-drop-down {
+  &__arrow,
+  &__arrow::before {
+    transition: background 250ms ease-in-out;
+    position: absolute;
+    width: calc(10px - var(--border-width, 0px));
+    height: calc(10px - var(--border-width, 0px));
+    box-sizing: border-box;
+    background: var(--background-color);
+  }
+
+  &__arrow {
+    visibility: hidden;
+  }
+
+  &__arrow::before {
+    visibility: visible;
+    content: "";
+    transform: rotate(45deg);
+  }
+
+  &[data-popper-placement^="top"]>&__arrow {
+    bottom: -5px;
+  }
+
+  &[data-popper-placement^="bottom"]>&__arrow {
+    top: -5px;
+  }
+
+  &[data-popper-placement^="left"]>&__arrow {
+    right: -5px;
+  }
+
+  &[data-popper-placement^="right"]>&__arrow {
+    left: -5px;
+  }
+
+  &__content {
+    background-color: var(--background-color);
+    color: var(--font-color);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    max-width: 200px;
+  }
+}
+
+.hebin-list {
+  position: relative;
+  z-index: inherit;
+  background-color: var(--background-color);
+  list-style: none;
+  margin: 0;
+  border-radius: var(--border-radius);
+  padding: 0;
+  color: var(--font-color);
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  width: 100%;
+
+  &>li {
+    height: var(--height);
+    line-height: var(--height);
+    cursor: pointer;
+    padding: 0 12px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &>span {
+      flex: 1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    &:hover:not(.no-data) {
+      background-color: var(--background-color-hover);
+    }
+
+  }
+
+  &>li&--disabled {
+    cursor: not-allowed;
+  }
+
+
+  &>li:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+  }
+
+  &>li:last-child {
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+  }
+}

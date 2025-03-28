@@ -21,13 +21,18 @@ jobs:
         toolchain: stable
         target: x86_64-pc-windows-msvc  # 指定 Windows 目标
 
+    - name: Setup PNPM
+      uses: pnpm/action-setup@v2
+      with:
+        version: 9.7.0  # 固定 pnpm 版本[3](@ref)
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 18.14.0 # 固定 Node.js 版本[2](@ref)
 
     - name: Install frontend deps
-      run: npm ci  # 更严格的依赖锁定
+      run: pnpm install --frozen-lockfile
 
     - name: Build Tauri
       uses: tauri-apps/tauri-action@v0

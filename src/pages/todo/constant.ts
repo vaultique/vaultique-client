@@ -1,4 +1,4 @@
-export const TODO_DIR = "BaiduSyncdisk\\vaultique\\todo"
+import { TODO_DIR } from "../../global/constant"
 
 export const GROUP_FILE_NAME = "group"
 export const GROUP_FILE_PATH = TODO_DIR + `\\${GROUP_FILE_NAME}`

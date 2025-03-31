@@ -3,10 +3,10 @@ import App from "./App.vue";
 import router from "./router";
 import "./styles/index.less";
 import { BaseDirectory, exists, mkdir, writeTextFile } from '@tauri-apps/plugin-fs';
-import { DEFAULT_GROUP_NAME, DEFAULT_GROUP_UUID, GROUP_FILE_NAME, TODO_DIR } from './pages/todo/constant';
+import { DEFAULT_GROUP_NAME, DEFAULT_GROUP_UUID, GROUP_FILE_NAME } from './pages/todo/constant';
 import { Group } from "./pages/todo/type";
-import { LOG_DIR } from "./util/log";
 import dayjs from "dayjs";
+import { LOG_DIR, TODO_DIR } from "./global/constant";
 
 bootstrap()
 

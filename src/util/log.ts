@@ -1,8 +1,7 @@
 import { documentDir } from '@tauri-apps/api/path';
 import dayjs from "dayjs";
 import { appendLog } from "../invokes/file";
-
-export const LOG_DIR = "BaiduSyncdisk\\vaultique\\log"
+import { LOG_DIR } from '../global/constant';
 
 export type LogModule = "todo" | "tool-uuid" | "other"
 

@@ -81,6 +81,8 @@ async function handleRemoveByContextmenu(): Promise<void> {
   hide()
   await load()
 }
+
+const showTrans = ref<boolean>(import.meta.env.DEV)
 </script>
 
 <template>
@@ -89,7 +91,7 @@ async function handleRemoveByContextmenu(): Promise<void> {
     <div>
       <button @click="handleAddGroup">添加分组</button>
       <input type="text" v-model="groupName">
-      <button @click="trans">转换</button>
+      <button v-if="showTrans" @click="trans">转换</button>
     </div>
 
     <section class="main-area">

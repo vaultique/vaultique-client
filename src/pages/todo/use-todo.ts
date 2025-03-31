@@ -1,8 +1,8 @@
 import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 import { ref } from "vue";
 import { addLog } from "../../util/log";
-import { TODO_DIR } from "./constant";
 import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE, TodoItem } from "./type";
+import { TODO_DIR } from "../../global/constant";
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])

@@ -8,7 +8,7 @@ import useGroup from './use-group';
 import useTodo from './use-todo';
 
 const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
-const { text, list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans } = useTodo()
 
 init()
 
@@ -32,8 +32,8 @@ async function init(): Promise<void> {
   await load()
 }
 
-async function handleAddTodo(group: string): Promise<void> {
-  await add(group)
+async function handleAddTodo(item: TodoItem): Promise<void> {
+  await add(item)
   await load()
 }
 
@@ -58,7 +58,6 @@ function showAddInput(uuid: string): void {
 }
 function handleBlur(): void {
   activeAddInput.value = ''
-  text.value = ''
 }
 
 // TODO click away to hide
@@ -107,7 +106,7 @@ async function handleSetPriority(p: Priority): Promise<void> {
             <Plus />
           </v-icon>
         </div>
-        <TodoInput v-show="group.uuid === activeAddInput" v-model="text" @submit="handleAddTodo(group.uuid)"
+        <TodoInput v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
           @blur="handleBlur"></TodoInput>
         <div class="todo-list">
           <TodoCard v-for="n in group.todoList" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
@@ -116,7 +115,8 @@ async function handleSetPriority(p: Priority): Promise<void> {
       </div>
     </section>
 
-    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority"></TodoOperatePanel>
+    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority">
+    </TodoOperatePanel>
   </div>
 </template>
 

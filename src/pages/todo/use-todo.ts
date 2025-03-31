@@ -1,24 +1,20 @@
 import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 import { ref } from "vue";
-import { generateUuid } from "../../invokes/uuid";
 import { addLog } from "../../util/log";
 import { TODO_DIR } from "./constant";
 import { Priority, PRIORITY_P4, TodoItem } from "./type";
 
 export default function useTodo() {
-  const text = ref<string>("")
   const list = ref<TodoItem[]>([])
   const doneList = ref<TodoItem[]>([])
 
-  async function add(group: string): Promise<void> {
-    if (typeof text.value !== 'string' || text.value.trim() === "") {
+  async function add(item: TodoItem): Promise<void> {
+    const { uuid, title } = item
+    if (typeof title !== 'string' || title.trim() === "") {
       return
     }
-    const id = await generateUuid();
-    const item: TodoItem = { uuid: id, title: text.value, group, done: false, priority: PRIORITY_P4 }
-    await writeTextFile(TODO_DIR + `\\${id}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
+    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
     await addLog({ module: "todo", content: `add ${item.title}` })
-    text.value = ''
   }
 
   async function load(): Promise<void> {
@@ -100,5 +96,5 @@ export default function useTodo() {
     return typeof uuid === 'string' && uuid.length === 36
   }
 
-  return { text, list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans }
+  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans }
 }

@@ -10,8 +10,8 @@ export type TodoItem = {
   title: string
   done: boolean
   group: string // gruop uuid
-  expiration?: number // 到期时间
   priority: Priority // 优先级
+  expiration?: number // 到期时间
 }
 
 export type Group = {

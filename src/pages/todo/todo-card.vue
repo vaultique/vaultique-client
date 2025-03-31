@@ -66,11 +66,8 @@ function handleContextmenu(e: MouseEvent): void {
 
 <style lang="less" scoped>
 .todo-card {
-  background-color: #ffffff;
-  border-radius: 4px;
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: row;
+  font-size: 16px;
+  color: #000000;
 
   &--p1 {
     --action-color: var(--priority-p1);
@@ -89,8 +86,24 @@ function handleContextmenu(e: MouseEvent): void {
   }
 
   &--done {
-    background-color: #c9c9c9;
+    color: #bebebe;
   }
+
+  &--p1&--done,
+  &--p2&--done,
+  &--p3&--done,
+  &--p4&--done {
+    --action-color: #9f9f9f;
+  }
+}
+
+.todo-card {
+  background-color: #ffffff;
+  box-shadow: 4px 4px 10px #2222221a;
+  border-radius: 8px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: row;
 
   .action-container {
     height: 24px;

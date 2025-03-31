@@ -13,12 +13,16 @@ const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, set
 
 init()
 
-const todos = computed<(Group & { size: number, todoList: TodoItem[] })[]>(() => {
+const todos = computed<(Group & { todoSize: number, todoList: TodoItem[], doneSize: number, doneList: TodoItem[] })[]>(() => {
   return groupList.value.map((group) => {
+    const todo = todoList.value.filter(item => item.group === group.uuid)
+    const done = doneList.value.filter(item => item.group === group.uuid)
     return {
       ...group,
-      size: todoList.value.filter(item => item.group === group.uuid).length,
-      todoList: [...todoList.value, ...doneList.value].filter(item => item.group === group.uuid),
+      todoSize: todo.length,
+      todoList: todo,
+      doneSize: done.length,
+      doneList: done,
     }
   })
 })
@@ -105,7 +109,7 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
             {{ group.name }}
           </div>
           <div class="count">
-            {{ group.size }}
+            {{ group.todoSize }}
           </div>
           <div class="separate" />
           <VIcon class="add" @click="showAddInput(group.uuid)">
@@ -118,8 +122,22 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
         />
         <div class="todo-list">
           <TodoCard
-            v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
-            @contextmenu="handleContextMenu"
+            v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu"
+          />
+        </div>
+        <div class="group-sub-title">
+          <div class="name">
+            已完成
+          </div>
+          <div class="count">
+            {{ group.doneSize }}
+          </div>
+        </div>
+        <div class="todo-list">
+          <TodoCard
+            v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu"
           />
         </div>
       </div>
@@ -158,6 +176,7 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
   flex-direction: row;
   gap: 15px;
   padding: 10px;
+  background-color: #f2f5fe;
 
   .group {
     flex: 0 0 300px;
@@ -167,6 +186,8 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
       flex-direction: row;
       justify-content: space-between;
       display: flex;
+      font-size: 18px;
+      margin-bottom: 12px;
 
       .name {
         font-weight: bolder;
@@ -185,13 +206,25 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
         cursor: pointer;
       }
     }
+
+    .group-sub-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin: 6px 0;
+      display: flex;
+      flex-direction: row;
+
+      .count {
+        margin-left: 8px;
+        color: #949494;
+      }
+    }
   }
 
   .todo-list {
     display: flex;
     flex-direction: column;
-    margin-top: 15px;
-    gap: 4px;
+    gap: 8px;
   }
 }
 </style>

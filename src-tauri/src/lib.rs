@@ -1,10 +1,12 @@
 mod base64;
 mod http;
 mod uuid;
+mod file;
 
 use base64::{decode, encode};
 use http::send_http_request;
 use uuid::uuid_generate;
+use file::append_log;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -16,7 +18,8 @@ pub fn run() {
             encode,
             decode,
             uuid_generate,
-            send_http_request
+            send_http_request,
+            append_log
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

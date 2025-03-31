@@ -1,47 +1,42 @@
-name: Feature Branch Build
+name: Release Branch Build
 
 on:
   push:
     branches:
-      - 'feature/**'  # 监听所有 feature 分支的变动
+      - 'feature/**'
 
 jobs:
   build-windows:
-    runs-on: windows-latest  # 指定 Windows 平台
+    runs-on: windows-latest
     permissions:
       contents: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: stable
-        target: x86_64-pc-windows-msvc  # 指定 Windows 目标
-
-    - name: Setup PNPM
-      uses: pnpm/action-setup@v2
-      with:
-        version: 9.7.0  # 固定 pnpm 版本[3](@ref)
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18.14.0 # 固定 Node.js 版本[2](@ref)
-
-    - name: Install frontend deps
-      run: pnpm install --frozen-lockfile
-
-    - name: Build Tauri
-      uses: tauri-apps/tauri-action@v0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tagName: ${{ github.ref_name }}
-        releaseName: "Windows Build ${GITHUB_REF#refs/heads/}"
-        target: x86_64-pc-windows-msvc  # 强制指定目标平台
-        publish: true
-        releaseDraft: false
-        artifactName: "app_${GITHUB_RUN_ID}.msi"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.7.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.14.0
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Windows Build ${{ github.head_ref }}"
+          target: x86_64-pc-windows-msvc
+          publish: true
+          releaseDraft: false
+          artifactName: "app_${GITHUB_RUN_ID}.msi"

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "preview": "vite preview",
+    "test:lint": "eslint .",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "td": "tauri dev"

@@ -1,9 +1,9 @@
 import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 import { ref } from "vue";
 import { generateUuid } from "../../invokes/uuid";
-import { DEFAULT_GROUP_UUID, TODO_DIR } from "./constant";
-import { TodoItem } from "./type";
 import { addLog } from "../../util/log";
+import { TODO_DIR } from "./constant";
+import { Priority, PRIORITY_P4, TodoItem } from "./type";
 
 export default function useTodo() {
   const text = ref<string>("")
@@ -15,7 +15,7 @@ export default function useTodo() {
       return
     }
     const id = await generateUuid();
-    const item: TodoItem = { uuid: id, title: text.value, group, done: false }
+    const item: TodoItem = { uuid: id, title: text.value, group, done: false, priority: PRIORITY_P4 }
     await writeTextFile(TODO_DIR + `\\${id}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
     await addLog({ module: "todo", content: `add ${item.title}` })
     text.value = ''
@@ -69,6 +69,16 @@ export default function useTodo() {
     await addLog({ module: "todo", content: `set ${item.title} undone` })
   }
 
+  async function setPriority(uuid: string, priority: Priority): Promise<void> {
+    const item = list.value.find(x => x.uuid === uuid)
+    if (item === undefined) {
+      return
+    }
+    item.priority = priority
+    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
+    await addLog({ module: "todo", content: `set ${item.title} priority ${priority}` })
+  }
+
   async function trans(): Promise<void> {
     const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document });
     for await (const entry of entries) {
@@ -76,8 +86,12 @@ export default function useTodo() {
         continue
       }
       const path = TODO_DIR + `\\${entry.name}`
+      if (!validateUuid(entry.name)) {
+        continue
+      }
       const content = await readTextFile(path, { baseDir: BaseDirectory.Document });
-      const item: TodoItem = { uuid: entry.name, title: content, group: DEFAULT_GROUP_UUID, done: false }
+      const item: TodoItem = JSON.parse(content)
+      item.priority = PRIORITY_P4
       await writeTextFile(TODO_DIR + `\\${entry.name}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
     }
   }
@@ -86,5 +100,5 @@ export default function useTodo() {
     return typeof uuid === 'string' && uuid.length === 36
   }
 
-  return { text, list, doneList, add, load, removeItem, setDone, setUnDone, trans }
+  return { text, list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans }
 }

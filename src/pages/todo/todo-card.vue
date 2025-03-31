@@ -1,20 +1,31 @@
 <script setup lang="ts">
-import { Select, CloseBold } from '@element-plus/icons-vue';
+import { CloseBold, Select } from '@element-plus/icons-vue';
 import { computed, toRefs } from 'vue';
 import { VIcon } from "../../components";
-import { TodoItem } from './type';
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from './type';
 
 const props = defineProps<{ item: TodoItem }>()
 const emit = defineEmits<{
   remove: [value: string]
   setDone: [value: string]
   setUnDone: [value: string]
+  contextmenu: [uuid: string, position: [number, number]]
 }>()
 
 const { item } = toRefs(props)
 
 const done = computed<boolean>(() => item.value.done)
 const title = computed<string>(() => item.value.title)
+const classList = computed(() => {
+  return {
+    'todo-card': true,
+    'todo-card--done': done.value,
+    'todo-card--p1': item.value.priority === PRIORITY_P1,
+    'todo-card--p2': item.value.priority === PRIORITY_P2,
+    'todo-card--p3': item.value.priority === PRIORITY_P3,
+    'todo-card--p4': item.value.priority === PRIORITY_P4,
+  }
+})
 
 function switchDone(): void {
   if (done.value) {
@@ -27,11 +38,18 @@ function switchDone(): void {
 function handleRemove(): void {
   emit('remove', item.value.uuid)
 }
+
+function handleContextmenu(e: MouseEvent): void {
+  e.preventDefault()
+  emit('contextmenu', item.value.uuid, [e.clientX, e.clientY])
+}
 </script>
 
 <template>
-  <div class="todo-card" :class="{ 'todo-card--done': done }">
-    <v-icon style="margin-right: 4px;" @click="handleRemove"><CloseBold /></v-icon>
+  <div :class="classList" @contextmenu="handleContextmenu">
+    <v-icon style="margin-right: 4px;" @click="handleRemove">
+      <CloseBold />
+    </v-icon>
     <div class="todo-card__action" @click="switchDone">
       <v-icon v-show="done"><Select></Select></v-icon>
     </div>
@@ -44,10 +62,25 @@ function handleRemove(): void {
   background-color: #ffffff;
   border-radius: 4px;
   padding: 4px 8px;
-
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  &--p1 {
+    --action-color: var(--priority-p1);
+  }
+
+  &--p2 {
+    --action-color: var(--priority-p2);
+  }
+
+  &--p3 {
+    --action-color: var(--priority-p3);
+  }
+
+  &--p4 {
+    --action-color: var(--priority-p4);
+  }
 
   &--done {
     background-color: #c9c9c9;
@@ -59,9 +92,10 @@ function handleRemove(): void {
     justify-content: center;
     width: 16px;
     height: 16px;
-    border: 1px solid #000000;
+    border: 2px solid var(--action-color);
     margin-right: 8px;
     cursor: pointer;
+    box-sizing: border-box;
   }
 
   &__title {

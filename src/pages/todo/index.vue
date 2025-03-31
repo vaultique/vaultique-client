@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue';
-import { computed, ref } from 'vue';
+import { computed, CSSProperties, ref } from 'vue';
 import { VIcon } from "../../components";
-import { HeaderBar, TodoCard, TodoInput } from "./component";
-import { Group, TodoItem } from './type';
+import { HeaderBar, TodoCard, TodoInput, TodoOperatePanel } from "./component";
+import { Group, Priority, TodoItem } from './type';
 import useGroup from './use-group';
 import useTodo from './use-todo';
 
 const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
-const { text, list: todoList, doneList, add, load, removeItem, setDone, setUnDone, trans } = useTodo()
+const { text, list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans } = useTodo()
 
 init()
 
@@ -60,19 +60,41 @@ function handleBlur(): void {
   activeAddInput.value = ''
   text.value = ''
 }
+
+// TODO click away to hide
+const CONTEXTMENU_DEFAULT_Z_INDEX = 1000
+const visible = ref<boolean>(false)
+const position = ref<[number, number]>([0, 0])
+const priorityUuid = ref<string>('')
+const styles = computed<CSSProperties>(() => {
+  return {
+    position: "fixed",
+    zIndex: CONTEXTMENU_DEFAULT_Z_INDEX,
+    left: `${position.value[0]}px`,
+    top: `${position.value[1]}px`,
+    display: visible.value ? "block" : "none",
+  }
+})
+function handleContextMenu(uuid: string, po: [number, number]): void {
+  visible.value = true
+  position.value = po
+  priorityUuid.value = uuid
+}
+async function handleSetPriority(p: Priority): Promise<void> {
+  console.warn('set priority', p, priorityUuid.value)
+  await setPriority(priorityUuid.value, p)
+  await load()
+  visible.value = false
+}
 </script>
 
 <template>
-  <div>
+  <div class="todo-layout">
     <HeaderBar />
     <div>
-      <div>
-        <button @click="handleAddGroup">添加分组</button>
-        <input type="text" v-model="groupName">
-      </div>
-      <div>
-        <button @click="trans">转换</button>
-      </div>
+      <button @click="handleAddGroup">添加分组</button>
+      <input type="text" v-model="groupName">
+      <button @click="trans">转换</button>
     </div>
 
     <section class="main-area">
@@ -85,27 +107,41 @@ function handleBlur(): void {
             <Plus />
           </v-icon>
         </div>
-        <TodoInput v-show="group.uuid === activeAddInput" v-model="text" @submit="handleAddTodo(group.uuid)" @blur="handleBlur"></TodoInput>
+        <TodoInput v-show="group.uuid === activeAddInput" v-model="text" @submit="handleAddTodo(group.uuid)"
+          @blur="handleBlur"></TodoInput>
         <div class="todo-list">
-          <TodoCard v-for="n in group.todoList" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @remove="handleRemove"></TodoCard>
+          <TodoCard v-for="n in group.todoList" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
+            @remove="handleRemove" @contextmenu="handleContextMenu"></TodoCard>
         </div>
       </div>
     </section>
+
+    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority"></TodoOperatePanel>
   </div>
 </template>
 
 <style lang="less" scoped>
-.todo-item {
-  display: flex;
-  flex-direction: row;
+.todo-layout {
+  --priority-p1: #ff4d4f;
+  --priority-p2: #faad14;
+  --priority-p3: #1890ff;
+  --priority-p4: #696969;
+}
 
-  &>div {
-    flex: 0 0 250px;
-  }
+.todo-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-bar {
+  flex: 0 0 24px;
 }
 
 .main-area {
+  flex: 1;
+  overflow-x: auto;
   display: flex;
   flex-direction: row;
   gap: 15px;

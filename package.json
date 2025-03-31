@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "preview": "vite preview",
-    "dev": "tauri dev",
-    "build": "vue-tsc --noEmit && vite build"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "td": "tauri dev"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

@@ -36,6 +36,7 @@ const list = Object.values(TOOL_RECORD).map(x => {
   display: flex;
   background-color: #f0f0f0;
   justify-content: space-between;
+  align-items: center;
   padding: 10px;
 }
 

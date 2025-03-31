@@ -1,5 +1,6 @@
-import { computed, CSSProperties, ref } from "vue"
-import { TodoItem } from "./type"
+import type { CSSProperties } from 'vue'
+import type { TodoItem } from './type'
+import { computed, ref } from 'vue'
 
 const CONTEXTMENU_DEFAULT_Z_INDEX = 1000
 
@@ -9,11 +10,11 @@ export default function useContextMenu() {
   const item = ref<TodoItem | null>(null)
   const styles = computed<CSSProperties>(() => {
     return {
-      position: "fixed",
+      position: 'fixed',
       zIndex: CONTEXTMENU_DEFAULT_Z_INDEX,
       left: `${position.value[0]}px`,
       top: `${position.value[1]}px`,
-      display: visible.value ? "block" : "none",
+      display: visible.value ? 'block' : 'none',
     }
   })
 

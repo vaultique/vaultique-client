@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import ToolCard from '@/components/tool-card/index.vue';
-import { useRouter } from 'vue-router';
-import { TOOL_RECORD } from '../../router';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { onMounted } from 'vue';
+import ToolCard from '@/components/tool-card/index.vue'
+import { getCurrentWindow } from '@tauri-apps/api/window'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { TOOL_RECORD } from '../../router'
 
-const router = useRouter();
+const router = useRouter()
 
 function jumpTool(item: { name: string, title: string }): void {
-  router.push(`/tool/${item.name}`);
-  getCurrentWindow().setTitle(item.title);
+  router.push(`/tool/${item.name}`)
+  getCurrentWindow().setTitle(item.title)
 }
 
 onMounted(() => {
-  getCurrentWindow().setTitle("工具列表");
+  getCurrentWindow().setTitle('工具列表')
 })
 </script>
 

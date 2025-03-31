@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import useEventListener from './useEventListener.ts'

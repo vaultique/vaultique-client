@@ -1,8 +1,9 @@
-import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@tauri-apps/plugin-fs";
-import { ref } from "vue";
-import { addLog } from "../../util/log";
-import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE, TodoItem } from "./type";
-import { TODO_DIR } from "../../global/constant";
+import type { Priority, TodoItem } from './type'
+import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from '@tauri-apps/plugin-fs'
+import { ref } from 'vue'
+import { TODO_DIR } from '../../global/constant'
+import { addLog } from '../../util/log'
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE } from './type'
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])
@@ -10,17 +11,17 @@ export default function useTodo() {
 
   async function add(item: TodoItem): Promise<void> {
     const { uuid, title } = item
-    if (typeof title !== 'string' || title.trim() === "") {
+    if (typeof title !== 'string' || title.trim() === '') {
       return
     }
-    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
-    await addLog({ module: "todo", content: `add ${item.title}` })
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `add ${item.title}` })
   }
 
   async function load(): Promise<void> {
-    const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document });
-    let collect: TodoItem[] = []
-    let doneCollect: TodoItem[] = []
+    const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document })
+    const collect: TodoItem[] = []
+    const doneCollect: TodoItem[] = []
     for (const entry of entries) {
       if (!entry.isFile) {
         continue
@@ -28,12 +29,13 @@ export default function useTodo() {
       if (!validateUuid(entry.name)) {
         continue
       }
-      const path = TODO_DIR + `\\${entry.name}`
-      const content = await readTextFile(path, { baseDir: BaseDirectory.Document });
+      const path = `${TODO_DIR}\\${entry.name}`
+      const content = await readTextFile(path, { baseDir: BaseDirectory.Document })
       const item: TodoItem = JSON.parse(content)
       if (!item.done) {
         collect.push(item)
-      } else {
+      }
+      else {
         doneCollect.push(item)
       }
     }
@@ -48,7 +50,7 @@ export default function useTodo() {
   }
 
   async function removeItem(uuid: string): Promise<void> {
-    await remove(TODO_DIR + `\\${uuid}`, { baseDir: BaseDirectory.Document })
+    await remove(`${TODO_DIR}\\${uuid}`, { baseDir: BaseDirectory.Document })
   }
 
   async function setDone(uuid: string): Promise<void> {
@@ -57,8 +59,8 @@ export default function useTodo() {
       return
     }
     item.done = !item.done
-    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
-    await addLog({ module: "todo", content: `set ${item.title} done` })
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} done` })
   }
 
   async function setUnDone(uuid: string): Promise<void> {
@@ -67,8 +69,8 @@ export default function useTodo() {
       return
     }
     item.done = !item.done
-    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
-    await addLog({ module: "todo", content: `set ${item.title} undone` })
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} undone` })
   }
 
   async function setPriority(uuid: string, priority: Priority): Promise<void> {
@@ -77,8 +79,8 @@ export default function useTodo() {
       return
     }
     item.priority = priority
-    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
-    await addLog({ module: "todo", content: `set ${item.title} priority ${priority}` })
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} priority ${priority}` })
   }
 
   async function setExpiration(uuid: string, expiration: number): Promise<void> {
@@ -87,24 +89,24 @@ export default function useTodo() {
       return
     }
     item.expiration = expiration
-    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
-    await addLog({ module: "todo", content: `set ${item.title} expiration ${expiration}` })
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} expiration ${expiration}` })
   }
 
   async function trans(): Promise<void> {
-    const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document });
+    const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document })
     for await (const entry of entries) {
       if (!entry.isFile) {
         continue
       }
-      const path = TODO_DIR + `\\${entry.name}`
+      const path = `${TODO_DIR}\\${entry.name}`
       if (!validateUuid(entry.name)) {
         continue
       }
-      const content = await readTextFile(path, { baseDir: BaseDirectory.Document });
+      const content = await readTextFile(path, { baseDir: BaseDirectory.Document })
       const item: TodoItem = JSON.parse(content)
       item.repeat = REPEAT_NONE
-      await writeTextFile(TODO_DIR + `\\${entry.name}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
+      await writeTextFile(`${TODO_DIR}\\${entry.name}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
     }
   }
 

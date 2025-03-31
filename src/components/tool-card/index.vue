@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 
-  const props = withDefaults(defineProps<{
-  title: string;
+const props = withDefaults(defineProps<{
+  title?: string
 }>(), {
   title: '',
-});
+})
 
-const title = computed(() => props.title);
+const title = computed(() => props.title)
 </script>
 
 <template>
@@ -29,4 +29,3 @@ const title = computed(() => props.title);
   cursor: pointer;
 }
 </style>
-

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { Ref } from 'vue'
-import { nextTick, onBeforeUnmount, reactive, ref, toRefs, watch } from 'vue'
 import type { Instance } from '@popperjs/core'
-import { arrow, createPopper, flip, offset, preventOverflow } from '@popperjs/core'
+import type { Ref } from 'vue'
 import type { Placement } from './types'
+import { arrow, createPopper, flip, offset, preventOverflow } from '@popperjs/core'
+import { nextTick, onBeforeUnmount, reactive, ref, toRefs, watch } from 'vue'
 
 const DEFAULT_LOCKED = false
 const DEFAULT_ARROW_PADDING = 0
@@ -38,7 +37,7 @@ function handleConfig(cfg: Config): Required<Config> {
 export default function usePopper(cfg: Config) {
   const { arrowPadding, locked, offsetDistance, offsetSkid, placement, contentNode, triggerNode, arrowNode } = handleConfig(cfg)
 
-  const state = reactive<{ isOpen: boolean; popperInstance: Instance | null }>({
+  const state = reactive<{ isOpen: boolean, popperInstance: Instance | null }>({
     isOpen: false,
     popperInstance: null,
   })

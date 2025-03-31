@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeaderBar from './header-bar.vue';
+import HeaderBar from './header-bar.vue'
 </script>
 
 <template>

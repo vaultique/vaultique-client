@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Plus } from '@element-plus/icons-vue';
-import { computed, ref } from 'vue';
-import { VIcon } from "../../components";
-import { HeaderBar, TodoCard, TodoInput, TodoOperatePanel } from "./component";
-import { Group, Priority, TodoItem } from './type';
-import useContextmenu from './use-contextmenu';
-import useGroup from './use-group';
-import useTodo from './use-todo';
+import type { Group, Priority, TodoItem } from './type'
+import { Plus } from '@element-plus/icons-vue'
+import { computed, ref } from 'vue'
+import { VIcon } from '../../components'
+import { HeaderBar, TodoCard, TodoInput, TodoOperatePanel } from './component'
+import useContextmenu from './use-contextmenu'
+import useGroup from './use-group'
+import useTodo from './use-todo'
 
 const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
 const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
@@ -17,8 +17,8 @@ const todos = computed<(Group & { size: number, todoList: TodoItem[] })[]>(() =>
   return groupList.value.map((group) => {
     return {
       ...group,
-      size: todoList.value.filter((item) => item.group === group.uuid).length,
-      todoList: [...todoList.value, ...doneList.value].filter((item) => item.group === group.uuid)
+      size: todoList.value.filter(item => item.group === group.uuid).length,
+      todoList: [...todoList.value, ...doneList.value].filter(item => item.group === group.uuid),
     }
   })
 })
@@ -89,33 +89,46 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
   <div class="todo-layout">
     <HeaderBar />
     <div>
-      <button @click="handleAddGroup">添加分组</button>
-      <input type="text" v-model="groupName">
-      <button v-if="showTrans" @click="trans">转换</button>
+      <button @click="handleAddGroup">
+        添加分组
+      </button>
+      <input v-model="groupName" type="text">
+      <button v-if="showTrans" @click="trans">
+        转换
+      </button>
     </div>
 
     <section class="main-area">
-      <div class="group" v-for="group in todos" :key="group.uuid">
+      <div v-for="group in todos" :key="group.uuid" class="group">
         <div class="group-title">
-          <div class="name">{{ group.name }}</div>
-          <div class="count">{{ group.size }}</div>
-          <div class="separate"></div>
-          <v-icon class="add" @click="showAddInput(group.uuid)">
+          <div class="name">
+            {{ group.name }}
+          </div>
+          <div class="count">
+            {{ group.size }}
+          </div>
+          <div class="separate" />
+          <VIcon class="add" @click="showAddInput(group.uuid)">
             <Plus />
-          </v-icon>
+          </VIcon>
         </div>
-        <TodoInput v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
-          @blur="handleBlur"></TodoInput>
+        <TodoInput
+          v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
+          @blur="handleBlur"
+        />
         <div class="todo-list">
-          <TodoCard v-for="n in group.todoList" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
-            @contextmenu="handleContextMenu"></TodoCard>
+          <TodoCard
+            v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
+            @contextmenu="handleContextMenu"
+          />
         </div>
       </div>
     </section>
 
-    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority"
-      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu">
-    </TodoOperatePanel>
+    <TodoOperatePanel
+      v-show="visible" :style="styles" @set-priority="handleSetPriority"
+      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu"
+    />
   </div>
 </template>
 

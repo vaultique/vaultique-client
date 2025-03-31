@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import './dropdown.less'
-
 import type { CSSProperties, Ref } from 'vue'
+
 import { computed, ref } from 'vue'
 import { useClickAway, usePopover, useSlotComponent } from '../../hook/popover'
+import { DROP_DOWN_NODE_INDEX } from './constant'
+import './dropdown.less'
 
-type Option = { label: string; value: string; disabled?: boolean }
+type Option = { label: string, value: string, disabled?: boolean }
 type DropDownProps = {
-  list: Option[]
+  list?: Option[]
   trigger?: 'click' | 'hover'
   zIndex?: number
   listClass?: string
   disabled?: boolean
 }
 
-
 defineOptions({ name: 'HebinDropDown' })
-
-const DROP_DOWN_PREFIX = 'hebin-drop-down'
-const DROP_DOWN_NODE_INDEX = 2000
-
 const props = withDefaults(defineProps<DropDownProps>(), {
   list: () => [],
   trigger: 'click',
@@ -31,6 +27,8 @@ const props = withDefaults(defineProps<DropDownProps>(), {
 const emit = defineEmits<{
   select: [value: Option]
 }>()
+
+const DROP_DOWN_PREFIX = 'hebin-drop-down'
 
 const contentEl = ref<HTMLElement>()
 const arrowEl = ref<HTMLElement>()
@@ -80,7 +78,7 @@ function nonblankString(v: unknown): boolean {
   return typeof v === 'string' && v.trim().length > 0
 }
 
-function generateClassNames(prefix: string, ...args: (string | { label: string; exist?: boolean })[]): string[] {
+function generateClassNames(prefix: string, ...args: (string | { label: string, exist?: boolean })[]): string[] {
   const li: string[] = [prefix]
   for (const node of args) {
     if (typeof node === 'string')
@@ -98,18 +96,20 @@ const listStyles = computed<CSSProperties>(() => {
 })
 
 // 组件样式
-const listClass = computed<string[]>(() => generateClassNames(LIST_PREFIX, "middle"))
+const listClass = computed<string[]>(() => generateClassNames(LIST_PREFIX, 'middle'))
 </script>
 
 <template>
-  <trigger-comp :vnode="vNode" @click="handleClickToggle" @mouseover="handleMouseover('open')" />
+  <TriggerComp :vnode="vNode" @click="handleClickToggle" @mouseover="handleMouseover('open')" />
 
   <Teleport to="body">
     <div v-show="isOpen" ref="contentEl" :class="classNames" :style="styles" @mouseleave="handleMouseover('close')">
       <div ref="arrowEl" data-popper-arrow :class="`${DROP_DOWN_PREFIX}__arrow`" />
       <ul :class="listClass" :style="listStyles">
-        <li v-for="(item, i) in props.list" :key="i" :class="{ [`${LIST_PREFIX}--disabled`]: item.disabled === true }"
-          @click="handleSelect(item)">
+        <li
+          v-for="(item, i) in props.list" :key="i" :class="{ [`${LIST_PREFIX}--disabled`]: item.disabled === true }"
+          @click="handleSelect(item)"
+        >
           <span>{{ item.label }}</span>
         </li>
         <li v-if="list.length === 0" class="no-data">

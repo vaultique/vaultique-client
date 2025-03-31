@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { Flag, Sunny, Sunrise, Timer } from '@element-plus/icons-vue';
-import { v4 as uuid } from "uuid";
-import { Component, computed, ref } from 'vue';
-import { VIcon } from "../../components";
-import { validateUuid } from '../../util';
-import { convertExpiration2Component, convertexpirationText2Timestamp } from './expiration';
-import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE, TodoItem } from './type';
+import type { Component } from 'vue'
+import type { Priority, TodoItem } from './type'
+import { Flag, Sunny, Sunrise, Timer } from '@element-plus/icons-vue'
+import { v4 as uuid } from 'uuid'
+import { computed, ref } from 'vue'
+import { VIcon } from '../../components'
+import { validateUuid } from '../../util'
+import { convertExpiration2Component, convertexpirationText2Timestamp } from './expiration'
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE } from './type'
 
 const props = defineProps<{ group: string }>()
 
 const emit = defineEmits<{
-  'submit': [value: TodoItem]
-  'blur': []
+  submit: [value: TodoItem]
+  blur: []
 }>()
 
-const PLACEHOLDER = "准备做什么?"
+const PLACEHOLDER = '准备做什么?'
 
 const item = ref<TodoItem>(generateItem())
 
@@ -53,7 +55,7 @@ function update(e: Event): void {
 function handleSubmit(): void {
   const group = props.group
   if (!validateUuid(group)) {
-    console.error("Invalid group uuid: ", group)
+    console.error('Invalid group uuid: ', group)
     return
   }
   item.value.group = group
@@ -65,11 +67,11 @@ function handleSubmit(): void {
 function generateItem(): TodoItem {
   return {
     uuid: uuid(),
-    title: "",
+    title: '',
     done: false,
     group: props.group,
     priority: PRIORITY_P4,
-    repeat: REPEAT_NONE
+    repeat: REPEAT_NONE,
   }
 }
 
@@ -77,7 +79,7 @@ function handleSetPriority(priority: Priority): void {
   item.value.priority = priority
 }
 
-function handleSetExpiration(e: "today" | "tomorror" | "week-end"): void {
+function handleSetExpiration(e: 'today' | 'tomorror' | 'week-end'): void {
   item.value.expiration = convertexpirationText2Timestamp(e)
 }
 </script>
@@ -86,41 +88,45 @@ function handleSetExpiration(e: "today" | "tomorror" | "week-end"): void {
   <div class="todo-input">
     <div class="todo-input__content">
       <div class="input">
-        <div class="placeholder" v-show="placeholderVisible">{{ PLACEHOLDER }}</div>
-        <input type="text" :value="item.title" @input="update" @focus="handleFocus" @blur="handleBlur"
-          @keypress.enter="handleSubmit">
+        <div v-show="placeholderVisible" class="placeholder">
+          {{ PLACEHOLDER }}
+        </div>
+        <input
+          type="text" :value="item.title" @input="update" @focus="handleFocus" @blur="handleBlur"
+          @keypress.enter="handleSubmit"
+        >
       </div>
       <div class="tips">
-        <v-icon v-if="expirationIcon" class="tip">
+        <VIcon v-if="expirationIcon" class="tip">
           <expirationIcon />
-        </v-icon>
-        <v-icon :class="priorityTipClass">
+        </VIcon>
+        <VIcon :class="priorityTipClass">
           <Flag />
-        </v-icon>
+        </VIcon>
       </div>
     </div>
     <div class="todo-input__action">
-      <v-icon class="action" @click="handleSetExpiration('today')">
+      <VIcon class="action" @click="handleSetExpiration('today')">
         <Sunny />
-      </v-icon>
-      <v-icon class="action" @click="handleSetExpiration('tomorror')">
+      </VIcon>
+      <VIcon class="action" @click="handleSetExpiration('tomorror')">
         <Sunrise />
-      </v-icon>
-      <v-icon class="action" @click="handleSetExpiration('week-end')">
+      </VIcon>
+      <VIcon class="action" @click="handleSetExpiration('week-end')">
         <Timer />
-      </v-icon>
-      <v-icon class="action priority--p1" @click="handleSetPriority(PRIORITY_P1)">
+      </VIcon>
+      <VIcon class="action priority--p1" @click="handleSetPriority(PRIORITY_P1)">
         <Flag />
-      </v-icon>
-      <v-icon class="action priority--p2" @click="handleSetPriority(PRIORITY_P2)">
+      </VIcon>
+      <VIcon class="action priority--p2" @click="handleSetPriority(PRIORITY_P2)">
         <Flag />
-      </v-icon>
-      <v-icon class="action priority--p3" @click="handleSetPriority(PRIORITY_P3)">
+      </VIcon>
+      <VIcon class="action priority--p3" @click="handleSetPriority(PRIORITY_P3)">
         <Flag />
-      </v-icon>
-      <v-icon class="action priority--p4" @click="handleSetPriority(PRIORITY_P4)">
+      </VIcon>
+      <VIcon class="action priority--p4" @click="handleSetPriority(PRIORITY_P4)">
         <Flag />
-      </v-icon>
+      </VIcon>
     </div>
   </div>
 </template>

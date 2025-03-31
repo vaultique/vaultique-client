@@ -1,16 +1,18 @@
-<script setup lang="ts"> 
-import { useRouter } from 'vue-router';
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 function jumpToToolList(): void {
-  router.back();
+  router.back()
 }
 </script>
 
 <template>
   <div class="header-bar">
-    <button @click="jumpToToolList">首页</button>
+    <button @click="jumpToToolList">
+      首页
+    </button>
   </div>
 </template>
 
@@ -22,4 +24,3 @@ function jumpToToolList(): void {
   padding: 10px;
 }
 </style>
-

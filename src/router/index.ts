@@ -1,10 +1,11 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
+import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-export const TOOL_RECORD: Record<string, { name: string, title: string }>  = {
-  BASE64: { name: 'base64', title: "base64编解码" },
-  UUID: { name: 'uuid', title: "UUID生成" },
-  HTTP: { name: "http", title: "HTTP测试" },
-  WEB_SOCKET: { name: "web-socket", title: "WebSocket测试" },
+export const TOOL_RECORD: Record<string, { name: string, title: string }> = {
+  BASE64: { name: 'base64', title: 'base64编解码' },
+  UUID: { name: 'uuid', title: 'UUID生成' },
+  HTTP: { name: 'http', title: 'HTTP测试' },
+  WEB_SOCKET: { name: 'web-socket', title: 'WebSocket测试' },
 }
 
 const routes: RouteRecordRaw[] = [
@@ -19,7 +20,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/todo',
     component: () => import('@/pages/todo/index.vue'),
-  }
+  },
 ]
 
 Object.values(TOOL_RECORD).forEach((tool) => {

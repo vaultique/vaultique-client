@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { isRef, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 
 export default function useEventListener(target: Window, event: keyof WindowEventMap, handler: any) {

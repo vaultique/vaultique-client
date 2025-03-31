@@ -11,10 +11,10 @@ export function convertExpiration2Text(expiration: number | undefined): string {
   if (diff === 0) {
     return '今天'
   }
-  if (diff === 60 * 60 * 24) {
+  if (diff === 60 * 60 * 24 * 1000) {
     return '明天'
   }
-  if (diff === -60 * 60 * 24) {
+  if (diff === -60 * 60 * 24 * 1000) {
     return '昨天'
   }
   return dayjs(expiration).format('YYYY-MM-DD')

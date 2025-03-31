@@ -3,7 +3,7 @@ import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from '@ta
 import { ref } from 'vue'
 import { TODO_DIR } from '../../global/constant'
 import { addLog } from '../../util/log'
-import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE } from './type'
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])
@@ -105,7 +105,7 @@ export default function useTodo() {
       }
       const content = await readTextFile(path, { baseDir: BaseDirectory.Document })
       const item: TodoItem = JSON.parse(content)
-      item.repeat = REPEAT_NONE
+      item.content = ''
       await writeTextFile(`${TODO_DIR}\\${entry.name}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
     }
   }

@@ -11,6 +11,7 @@ export type Repeat = typeof REPEAT_NONE | typeof REPEAT_WHEN_DONE
 export type TodoItem = {
   uuid: string
   title: string
+  content: string
   done: boolean
   group: string // gruop uuid
   priority: Priority // 优先级

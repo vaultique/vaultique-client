@@ -68,6 +68,7 @@ function generateItem(): TodoItem {
   return {
     uuid: uuid(),
     title: '',
+    content: '',
     done: false,
     group: props.group,
     priority: PRIORITY_P4,

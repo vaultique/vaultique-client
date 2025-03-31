@@ -3,10 +3,8 @@ import type { Group, Priority, TodoItem } from './type'
 import { Plus } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { VIcon } from '../../components'
-import { HeaderBar, TodoCard, TodoInput, TodoOperatePanel } from './component'
-import useContextmenu from './use-contextmenu'
-import useGroup from './use-group'
-import useTodo from './use-todo'
+import { HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
+import { useContextmenu, useDetail, useGroup, useTodo } from './hook'
 
 const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
 const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
@@ -59,6 +57,8 @@ function showAddInput(uuid: string): void {
 function handleBlur(): void {
   activeAddInput.value = ''
 }
+
+const { visible: detailVisible, item: detailItem, styles: detailStyles, show: detailShow } = useDetail()
 
 const { visible, styles, item, handleContextMenu, hide } = useContextmenu()
 async function handleSetPriority(p: Priority): Promise<void> {
@@ -123,7 +123,7 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
         <div class="todo-list">
           <TodoCard
             v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow"
           />
         </div>
         <div class="group-sub-title">
@@ -137,7 +137,7 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
         <div class="todo-list">
           <TodoCard
             v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow"
           />
         </div>
       </div>
@@ -147,6 +147,8 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
       v-show="visible" :style="styles" @set-priority="handleSetPriority"
       @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu"
     />
+
+    <TodoDetail v-show="detailVisible" :item="detailItem" :style="detailStyles" />
   </div>
 </template>
 

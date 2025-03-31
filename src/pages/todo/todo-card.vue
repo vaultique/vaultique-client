@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type { TodoItem } from './type'
-import { Select } from '@element-plus/icons-vue'
+import type { Priority, TodoItem } from './type'
 import { computed, toRefs } from 'vue'
-import { VIcon } from '../../components'
+import { VCheckbox } from '../../components'
 import { convertExpiration2Text } from './expiration'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
+import { Theme, THEME_ERROR, THEME_PRIMARY, THEME_WARNING } from '../../components/v-checkbox/constant'
 
 const props = defineProps<{ item: TodoItem }>()
 const emit = defineEmits<{
+  select: [item: TodoItem, position: [number, number]]
   setDone: [value: string]
   setUnDone: [value: string]
   contextmenu: [item: TodoItem, position: [number, number]]
@@ -22,11 +23,16 @@ const classList = computed(() => {
   return {
     'todo-card': true,
     'todo-card--done': done.value,
-    'todo-card--p1': item.value.priority === PRIORITY_P1,
-    'todo-card--p2': item.value.priority === PRIORITY_P2,
-    'todo-card--p3': item.value.priority === PRIORITY_P3,
-    'todo-card--p4': item.value.priority === PRIORITY_P4,
   }
+})
+const theme = computed<Theme>(() => {
+  const mapping: Record<Priority, Theme> = {
+    [PRIORITY_P1]: THEME_ERROR,
+    [PRIORITY_P2]: THEME_WARNING,
+    [PRIORITY_P3]: THEME_PRIMARY,
+    [PRIORITY_P4]: THEME_PRIMARY,
+  }
+  return mapping[item.value.priority]
 })
 
 function switchDone(): void {
@@ -42,16 +48,16 @@ function handleContextmenu(e: MouseEvent): void {
   e.preventDefault()
   emit('contextmenu', item.value, [e.clientX, e.clientY])
 }
+
+function handleClick(e: MouseEvent): void {
+  emit('select', item.value, [e.clientX, e.clientY])
+}
 </script>
 
 <template>
-  <div :class="classList" @contextmenu="handleContextmenu">
+  <div :class="classList" @contextmenu="handleContextmenu" @click="handleClick">
     <div class="action-container">
-      <div class="todo-card__action" @click="switchDone">
-        <VIcon v-show="done">
-          <Select />
-        </VIcon>
-      </div>
+      <VCheckbox :checked="done" @click="switchDone" :theme="theme" />
     </div>
     <div class="content-container">
       <div class="todo-card__title">
@@ -69,31 +75,8 @@ function handleContextmenu(e: MouseEvent): void {
   font-size: 16px;
   color: #000000;
 
-  &--p1 {
-    --action-color: var(--priority-p1);
-  }
-
-  &--p2 {
-    --action-color: var(--priority-p2);
-  }
-
-  &--p3 {
-    --action-color: var(--priority-p3);
-  }
-
-  &--p4 {
-    --action-color: var(--priority-p4);
-  }
-
   &--done {
     color: #bebebe;
-  }
-
-  &--p1&--done,
-  &--p2&--done,
-  &--p3&--done,
-  &--p4&--done {
-    --action-color: #9f9f9f;
   }
 }
 
@@ -111,18 +94,6 @@ function handleContextmenu(e: MouseEvent): void {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-  }
-
-  .todo-card__action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--action-color);
-    margin-right: 8px;
-    cursor: pointer;
-    box-sizing: border-box;
   }
 
   .content-container {

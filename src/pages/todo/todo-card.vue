@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { CloseBold, Select } from '@element-plus/icons-vue';
+import { Select } from '@element-plus/icons-vue';
 import { computed, toRefs } from 'vue';
 import { VIcon } from "../../components";
+import { convertExpiration2Text } from './expiration';
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from './type';
 
 const props = defineProps<{ item: TodoItem }>()
 const emit = defineEmits<{
-  remove: [value: string]
   setDone: [value: string]
   setUnDone: [value: string]
-  contextmenu: [uuid: string, position: [number, number]]
+  contextmenu: [item: TodoItem, position: [number, number]]
 }>()
 
 const { item } = toRefs(props)
 
 const done = computed<boolean>(() => item.value.done)
 const title = computed<string>(() => item.value.title)
+const expiration = computed<string>(() => convertExpiration2Text(item.value.expiration))
 const classList = computed(() => {
   return {
     'todo-card': true,
@@ -35,25 +36,23 @@ function switchDone(): void {
   }
 }
 
-function handleRemove(): void {
-  emit('remove', item.value.uuid)
-}
-
 function handleContextmenu(e: MouseEvent): void {
   e.preventDefault()
-  emit('contextmenu', item.value.uuid, [e.clientX, e.clientY])
+  emit('contextmenu', item.value, [e.clientX, e.clientY])
 }
 </script>
 
 <template>
   <div :class="classList" @contextmenu="handleContextmenu">
-    <v-icon style="margin-right: 4px;" @click="handleRemove">
-      <CloseBold />
-    </v-icon>
-    <div class="todo-card__action" @click="switchDone">
-      <v-icon v-show="done"><Select></Select></v-icon>
+    <div class="action-container">
+      <div class="todo-card__action" @click="switchDone">
+        <v-icon v-show="done"><Select></Select></v-icon>
+      </div>
     </div>
-    <div class="todo-card__title">{{ title }}</div>
+    <div class="content-container">
+      <div class="todo-card__title">{{ title }}</div>
+      <div class="expiration" v-if="expiration !== ''">{{ expiration }}</div>
+    </div>
   </div>
 </template>
 
@@ -64,7 +63,6 @@ function handleContextmenu(e: MouseEvent): void {
   padding: 4px 8px;
   display: flex;
   flex-direction: row;
-  align-items: center;
 
   &--p1 {
     --action-color: var(--priority-p1);
@@ -86,7 +84,15 @@ function handleContextmenu(e: MouseEvent): void {
     background-color: #c9c9c9;
   }
 
-  &__action {
+  .action-container {
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .todo-card__action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -98,8 +104,19 @@ function handleContextmenu(e: MouseEvent): void {
     box-sizing: border-box;
   }
 
-  &__title {
+  .content-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .todo-card__title {
     font-size: 16px;
+    line-height: 24px;
+  }
+
+  .expiration {
+    font-size: 14px;
+    color: #5a5a5a;
   }
 }
 </style>

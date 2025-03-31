@@ -1,33 +1,36 @@
-import { computed, CSSProperties, Ref, ref } from "vue"
+import { computed, CSSProperties, ref } from "vue"
+import { TodoItem } from "./type"
 
 const CONTEXTMENU_DEFAULT_Z_INDEX = 1000
 
-export default function useContextMenu(el: Ref<HTMLElement | null>) {
+export default function useContextMenu() {
   const visible = ref<boolean>(false)
-  const posotion = ref<[number, number]>([0, 0])
-
+  const position = ref<[number, number]>([0, 0])
+  const item = ref<TodoItem | null>(null)
   const styles = computed<CSSProperties>(() => {
     return {
       position: "fixed",
       zIndex: CONTEXTMENU_DEFAULT_Z_INDEX,
-      left: `${posotion.value[0]}px`,
-      top: `${posotion.value[1]}px`,
+      left: `${position.value[0]}px`,
+      top: `${position.value[1]}px`,
       display: visible.value ? "block" : "none",
     }
   })
 
-  function init(): void {
-    if (el.value) {
-      el.value.addEventListener("contextmenu", handleContextMenu)
-      // TODO click away
+  function handleContextMenu(_item: TodoItem, po: [number, number]): void {
+    if (_item === undefined || _item === null) {
+      return
     }
-  }
-
-  function handleContextMenu(e: MouseEvent): void {
-    e.preventDefault()
-    posotion.value = [e.clientX, e.clientY]
+    position.value = po
+    item.value = _item
     visible.value = true
   }
 
-  return { visible, posotion, styles, init }
+  function hide(): void {
+    visible.value = false
+    item.value = null
+    position.value = [0, 0]
+  }
+
+  return { visible, position, styles, item, handleContextMenu, hide }
 }

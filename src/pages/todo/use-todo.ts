@@ -2,7 +2,7 @@ import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@ta
 import { ref } from "vue";
 import { addLog } from "../../util/log";
 import { TODO_DIR } from "./constant";
-import { Priority, PRIORITY_P4, TodoItem } from "./type";
+import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from "./type";
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])
@@ -37,7 +37,13 @@ export default function useTodo() {
         doneCollect.push(item)
       }
     }
-    list.value = collect
+    const mapping: Record<Priority, number> = {
+      [PRIORITY_P1]: 4,
+      [PRIORITY_P2]: 3,
+      [PRIORITY_P3]: 2,
+      [PRIORITY_P4]: 1,
+    }
+    list.value = collect.sort((a: TodoItem, b: TodoItem) => mapping[b.priority] - mapping[a.priority])
     doneList.value = doneCollect
   }
 

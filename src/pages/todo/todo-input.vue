@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Flag, Timer } from '@element-plus/icons-vue';
+import { Sunny, Flag, Timer, Sunrise } from '@element-plus/icons-vue';
 import { v4 as uuid } from "uuid";
-import { computed, ref } from 'vue';
+import { Component, computed, ref } from 'vue';
 import { VIcon } from "../../components";
 import { validateUuid } from '../../util';
 import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from './type';
+import dayjs from 'dayjs';
 
 const props = defineProps<{ group: string }>()
 
@@ -30,6 +31,18 @@ const priorityTipClass = computed<Record<string, boolean>>(() => {
     'priority--p3': item.value.priority === PRIORITY_P3,
     'priority--p4': item.value.priority === PRIORITY_P4,
   }
+})
+
+const expirationIcon = computed<Component | null>(() => {
+  const today = dayjs().endOf('day')
+  if (item.value.expiration === today.valueOf()) {
+    return Sunny
+  } else if (item.value.expiration === today.add(1, 'day').valueOf()) {
+    return Sunrise
+  } else if (item.value.expiration === today.endOf('week').valueOf()) {
+    return Timer
+  }
+  return null
 })
 
 function handleFocus(): void {
@@ -72,6 +85,23 @@ function generateItem(): TodoItem {
 function handleSetPriority(priority: Priority): void {
   item.value.priority = priority
 }
+
+function handleSetExpiration(e: "today" | "tomorror" | "week-end"): void {
+  const today = dayjs().endOf('day')
+  let expiration
+  switch (e) {
+    case "today":
+      expiration = today.valueOf()
+      break
+    case "tomorror":
+      expiration = today.add(1, 'day').valueOf()
+      break
+    case "week-end":
+      expiration = today.endOf('week').valueOf()
+      break
+  }
+  item.value.expiration = expiration
+}
 </script>
 
 <template>
@@ -83,13 +113,22 @@ function handleSetPriority(priority: Priority): void {
           @keypress.enter="handleSubmit">
       </div>
       <div class="tips">
+        <v-icon v-if="expirationIcon" class="tip">
+          <expirationIcon />
+        </v-icon>
         <v-icon :class="priorityTipClass">
           <Flag />
         </v-icon>
       </div>
     </div>
     <div class="todo-input__action">
-      <v-icon class="action">
+      <v-icon class="action" @click="handleSetExpiration('today')">
+        <Sunny />
+      </v-icon>
+      <v-icon class="action" @click="handleSetExpiration('tomorror')">
+        <Sunrise />
+      </v-icon>
+      <v-icon class="action" @click="handleSetExpiration('week-end')">
         <Timer />
       </v-icon>
       <v-icon class="action priority--p1" @click="handleSetPriority(PRIORITY_P1)">

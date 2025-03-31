@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue';
-import { computed, CSSProperties, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { VIcon } from "../../components";
 import { HeaderBar, TodoCard, TodoInput, TodoOperatePanel } from "./component";
 import { Group, Priority, TodoItem } from './type';
+import useContextmenu from './use-contextmenu';
 import useGroup from './use-group';
 import useTodo from './use-todo';
 
@@ -37,11 +38,6 @@ async function handleAddTodo(item: TodoItem): Promise<void> {
   await load()
 }
 
-async function handleRemove(uuid: string): Promise<void> {
-  await removeItem(uuid)
-  await load()
-}
-
 async function handleSetDone(uuid: string): Promise<void> {
   await setDone(uuid)
   await load()
@@ -60,30 +56,22 @@ function handleBlur(): void {
   activeAddInput.value = ''
 }
 
-// TODO click away to hide
-const CONTEXTMENU_DEFAULT_Z_INDEX = 1000
-const visible = ref<boolean>(false)
-const position = ref<[number, number]>([0, 0])
-const priorityUuid = ref<string>('')
-const styles = computed<CSSProperties>(() => {
-  return {
-    position: "fixed",
-    zIndex: CONTEXTMENU_DEFAULT_Z_INDEX,
-    left: `${position.value[0]}px`,
-    top: `${position.value[1]}px`,
-    display: visible.value ? "block" : "none",
-  }
-})
-function handleContextMenu(uuid: string, po: [number, number]): void {
-  visible.value = true
-  position.value = po
-  priorityUuid.value = uuid
-}
+const { visible, styles, item, handleContextMenu, hide } = useContextmenu()
 async function handleSetPriority(p: Priority): Promise<void> {
-  console.warn('set priority', p, priorityUuid.value)
-  await setPriority(priorityUuid.value, p)
+  if (item.value === null) {
+    return
+  }
+  await setPriority(item.value.uuid, p)
+  hide()
   await load()
-  visible.value = false
+}
+async function handleRemoveByContextmenu(): Promise<void> {
+  if (item.value === null) {
+    return
+  }
+  await removeItem(item.value.uuid)
+  hide()
+  await load()
 }
 </script>
 
@@ -110,12 +98,13 @@ async function handleSetPriority(p: Priority): Promise<void> {
           @blur="handleBlur"></TodoInput>
         <div class="todo-list">
           <TodoCard v-for="n in group.todoList" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone"
-            @remove="handleRemove" @contextmenu="handleContextMenu"></TodoCard>
+            @contextmenu="handleContextMenu"></TodoCard>
         </div>
       </div>
     </section>
 
-    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority">
+    <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority"
+      @remove="handleRemoveByContextmenu">
     </TodoOperatePanel>
   </div>
 </template>

@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { Flag, Delete } from '@element-plus/icons-vue'
+import { Delete, Flag, Sunny, Sunrise, Timer } from '@element-plus/icons-vue';
 import { VIcon } from "../../components";
-import { type Priority } from './type';
-import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type';
+import { convertexpirationText2Timestamp } from './expiration';
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, type Priority } from './type';
 
 const emit = defineEmits<{
   setPriority: [value: Priority]
+  setExpiration: [value: number]
   remove: []
 }>()
 
 function handleSetPriority(priority: Priority): void {
   emit('setPriority', priority)
+}
+
+function handleSetExpiration(e: "today" | "tomorror" | "week-end"): void {
+  emit('setExpiration', convertexpirationText2Timestamp(e))
 }
 
 function handleRemove(): void {
@@ -20,9 +25,22 @@ function handleRemove(): void {
 
 <template>
   <div class="todo-operate-panel">
+    <div class="title">日期</div>
+    <div class="expiration-list">
+      <v-icon class="expiration" @click="handleSetExpiration('today')">
+        <Sunny />
+      </v-icon>
+      <v-icon class="expiration" @click="handleSetExpiration('tomorror')">
+        <Sunrise />
+      </v-icon>
+      <v-icon class="expiration" @click="handleSetExpiration('week-end')">
+        <Timer />
+      </v-icon>
+    </div>
     <div class="title">优先级</div>
     <div class="priority-list">
       <VIcon class="priority priority--p1" @click="handleSetPriority(PRIORITY_P1)">
+
         <Flag />
       </VIcon>
       <VIcon class="priority priority--p2" @click="handleSetPriority(PRIORITY_P2)">
@@ -63,7 +81,7 @@ function handleRemove(): void {
     padding: 2px 4px;
     cursor: pointer;
     margin-top: 8px;
-    
+
     &:hover {
       background-color: #e9e9e9;
     }
@@ -77,15 +95,19 @@ function handleRemove(): void {
     color: #5f5f5f;
     font-size: 14px;
     margin-bottom: 4px;
+    padding: 0 4px;
   }
 
-  .priority-list {
+  .priority-list,
+  .expiration-list {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 0 4px;
   }
 
-  .priority {
+  .priority,
+  .expiration {
     font-size: 18px;
     cursor: pointer;
   }

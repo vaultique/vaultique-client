@@ -2,7 +2,7 @@ import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from "@ta
 import { ref } from "vue";
 import { addLog } from "../../util/log";
 import { TODO_DIR } from "./constant";
-import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from "./type";
+import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE, TodoItem } from "./type";
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])
@@ -81,6 +81,16 @@ export default function useTodo() {
     await addLog({ module: "todo", content: `set ${item.title} priority ${priority}` })
   }
 
+  async function setExpiration(uuid: string, expiration: number): Promise<void> {
+    const item = list.value.find(x => x.uuid === uuid)
+    if (item === undefined) {
+      return
+    }
+    item.expiration = expiration
+    await writeTextFile(TODO_DIR + `\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
+    await addLog({ module: "todo", content: `set ${item.title} expiration ${expiration}` })
+  }
+
   async function trans(): Promise<void> {
     const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document });
     for await (const entry of entries) {
@@ -93,7 +103,7 @@ export default function useTodo() {
       }
       const content = await readTextFile(path, { baseDir: BaseDirectory.Document });
       const item: TodoItem = JSON.parse(content)
-      item.priority = PRIORITY_P4
+      item.repeat = REPEAT_NONE
       await writeTextFile(TODO_DIR + `\\${entry.name}`, JSON.stringify(item), { baseDir: BaseDirectory.Document });
     }
   }
@@ -102,5 +112,5 @@ export default function useTodo() {
     return typeof uuid === 'string' && uuid.length === 36
   }
 
-  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans }
+  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans }
 }

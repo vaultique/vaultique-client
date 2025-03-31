@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Sunny, Flag, Timer, Sunrise } from '@element-plus/icons-vue';
+import { Flag, Sunny, Sunrise, Timer } from '@element-plus/icons-vue';
 import { v4 as uuid } from "uuid";
 import { Component, computed, ref } from 'vue';
 import { VIcon } from "../../components";
 import { validateUuid } from '../../util';
-import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, TodoItem } from './type';
-import dayjs from 'dayjs';
+import { convertExpiration2Component, convertexpirationText2Timestamp } from './expiration';
+import { Priority, PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_NONE, TodoItem } from './type';
 
 const props = defineProps<{ group: string }>()
 
@@ -33,17 +33,7 @@ const priorityTipClass = computed<Record<string, boolean>>(() => {
   }
 })
 
-const expirationIcon = computed<Component | null>(() => {
-  const today = dayjs().endOf('day')
-  if (item.value.expiration === today.valueOf()) {
-    return Sunny
-  } else if (item.value.expiration === today.add(1, 'day').valueOf()) {
-    return Sunrise
-  } else if (item.value.expiration === today.endOf('week').valueOf()) {
-    return Timer
-  }
-  return null
-})
+const expirationIcon = computed<Component | null>(() => convertExpiration2Component(item.value.expiration))
 
 function handleFocus(): void {
   focus.value = true
@@ -79,6 +69,7 @@ function generateItem(): TodoItem {
     done: false,
     group: props.group,
     priority: PRIORITY_P4,
+    repeat: REPEAT_NONE
   }
 }
 
@@ -87,20 +78,7 @@ function handleSetPriority(priority: Priority): void {
 }
 
 function handleSetExpiration(e: "today" | "tomorror" | "week-end"): void {
-  const today = dayjs().endOf('day')
-  let expiration
-  switch (e) {
-    case "today":
-      expiration = today.valueOf()
-      break
-    case "tomorror":
-      expiration = today.add(1, 'day').valueOf()
-      break
-    case "week-end":
-      expiration = today.endOf('week').valueOf()
-      break
-  }
-  item.value.expiration = expiration
+  item.value.expiration = convertexpirationText2Timestamp(e)
 }
 </script>
 

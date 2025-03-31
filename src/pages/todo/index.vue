@@ -9,7 +9,7 @@ import useGroup from './use-group';
 import useTodo from './use-todo';
 
 const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
-const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, trans } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
 
 init()
 
@@ -65,6 +65,14 @@ async function handleSetPriority(p: Priority): Promise<void> {
   hide()
   await load()
 }
+async function handleSetExpiration(expiration: number): Promise<void> {
+  if (item.value === null) {
+    return
+  }
+  await setExpiration(item.value.uuid, expiration)
+  hide()
+  await load()
+}
 async function handleRemoveByContextmenu(): Promise<void> {
   if (item.value === null) {
     return
@@ -104,7 +112,7 @@ async function handleRemoveByContextmenu(): Promise<void> {
     </section>
 
     <TodoOperatePanel ref="todo-operate-panel" v-show="visible" :style="styles" @set-priority="handleSetPriority"
-      @remove="handleRemoveByContextmenu">
+      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu">
     </TodoOperatePanel>
   </div>
 </template>

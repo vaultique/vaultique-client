@@ -19,7 +19,6 @@ export default function useDetail() {
   })
 
   function show(_item: TodoItem, po: [number, number]): void {
-    console.warn('show detail', _item, po)
     if (_item === undefined || _item === null) {
       return
     }

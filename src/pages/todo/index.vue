@@ -59,6 +59,9 @@ function handleBlur(): void {
 }
 
 const { visible: detailVisible, item: detailItem, styles: detailStyles, show: detailShow } = useDetail()
+function handleDetailUpdate(item: TodoItem): void {
+  console.warn(item)
+}
 
 const { visible, styles, item, handleContextMenu, hide } = useContextmenu()
 async function handleSetPriority(p: Priority): Promise<void> {
@@ -116,15 +119,11 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
             <Plus />
           </VIcon>
         </div>
-        <TodoInput
-          v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
-          @blur="handleBlur"
-        />
+        <TodoInput v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
+          @blur="handleBlur" />
         <div class="todo-list">
-          <TodoCard
-            v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow"
-          />
+          <TodoCard v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
         </div>
         <div class="group-sub-title">
           <div class="name">
@@ -135,20 +134,16 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
           </div>
         </div>
         <div class="todo-list">
-          <TodoCard
-            v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow"
-          />
+          <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone"
+            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
         </div>
       </div>
     </section>
 
-    <TodoOperatePanel
-      v-show="visible" :style="styles" @set-priority="handleSetPriority"
-      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu"
-    />
+    <TodoOperatePanel v-show="visible" :style="styles" @set-priority="handleSetPriority"
+      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
 
-    <TodoDetail v-show="detailVisible" :item="detailItem" :style="detailStyles" />
+    <TodoDetail v-show="detailVisible" :item="detailItem" :style="detailStyles" @update="handleDetailUpdate" />
   </div>
 </template>
 

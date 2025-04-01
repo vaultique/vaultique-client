@@ -2,14 +2,14 @@
 import { Select } from '@element-plus/icons-vue'
 import { computed, defineComponent } from 'vue'
 import { VIcon } from '../index'
-import { THEME_ERROR, THEME_PRIMARY, THEME_WARNING } from './constant'
+import { THEME_ERROR, THEME_PRIMARY, THEME_SUCCESS, THEME_WARNING } from './constant'
 import './style.less'
 
 const props = withDefaults(defineProps<{
   theme?: string
   checked: boolean
 }>(), {
-  theme: 'primary',
+  theme: THEME_PRIMARY,
 })
 
 defineComponent({ name: 'VCheckbox' })
@@ -20,6 +20,7 @@ const classList = computed<Record<string, boolean>>(() => {
   return {
     'v-checkbox': true,
     'v-checkbox--primary': props.theme === THEME_PRIMARY,
+    'v-checkbox--success': props.theme === THEME_SUCCESS,
     'v-checkbox--error': props.theme === THEME_ERROR,
     'v-checkbox--warning': props.theme === THEME_WARNING,
     'v-checkbox--done': props.checked,
@@ -55,6 +56,10 @@ const classList = computed<Record<string, boolean>>(() => {
     --border-color: var(--v-c-primary);
   }
 
+  &--success {
+    --border-color: var(--v-c-success);
+  }
+
   &--error {
     --border-color: var(--v-c-error);
   }
@@ -65,6 +70,7 @@ const classList = computed<Record<string, boolean>>(() => {
 
 
   &--primary&--done,
+  &--success&--done,
   &--error&--done,
   &--warning&--done {
     --border-color: #9f9f9f;

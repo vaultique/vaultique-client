@@ -4,7 +4,7 @@ import { computed, toRefs } from 'vue'
 import { VCheckbox } from '../../components'
 import { convertExpiration2Text } from './expiration'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
-import { Theme, THEME_ERROR, THEME_PRIMARY, THEME_WARNING } from '../../components/v-checkbox/constant'
+import { Theme, THEME_ERROR, THEME_PRIMARY, THEME_SUCCESS, THEME_WARNING } from '../../components/v-checkbox/constant'
 
 const props = defineProps<{ item: TodoItem }>()
 const emit = defineEmits<{
@@ -29,7 +29,7 @@ const theme = computed<Theme>(() => {
   const mapping: Record<Priority, Theme> = {
     [PRIORITY_P1]: THEME_ERROR,
     [PRIORITY_P2]: THEME_WARNING,
-    [PRIORITY_P3]: THEME_PRIMARY,
+    [PRIORITY_P3]: THEME_SUCCESS,
     [PRIORITY_P4]: THEME_PRIMARY,
   }
   return mapping[item.value.priority]

@@ -1,3 +1,5 @@
+export { default as GroupHeader } from './group-header.vue'
+export { default as GroupSubHeader } from './group-sub-header.vue'
 export { default as HeaderBar } from './header-bar.vue'
 export { default as TodoCard } from './todo-card.vue'
 export { default as TodoDetail } from './todo-detail.vue'

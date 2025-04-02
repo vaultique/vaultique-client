@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Group, Priority, TodoItem } from './type'
-import { Plus } from '@element-plus/icons-vue'
-import { computed, ref } from 'vue'
-import { VIcon } from '../../components'
-import { HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
+import { computed, ref, useTemplateRef } from 'vue'
+import { useClickAway } from '../../hook/popover'
+import { GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
 import { useContextmenu, useDetail, useGroup, useTodo } from './hook'
 
-const { name: groupName, list: groupList, add: addGroup, load: loadGroupList } = useGroup()
+const { name: groupName, list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
 const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
 
 init()
@@ -27,6 +26,11 @@ const todos = computed<(Group & { todoSize: number, todoList: TodoItem[], doneSi
 
 async function handleAddGroup(): Promise<void> {
   await addGroup()
+  await loadGroupList()
+}
+
+async function handleGroupUpdate(uuid: string, text: string): Promise<void> {
+  await renameGroup(uuid, text)
   await loadGroupList()
 }
 
@@ -58,7 +62,7 @@ function handleBlur(): void {
   activeAddInput.value = ''
 }
 
-const { visible: detailVisible, item: detailItem, styles: detailStyles, show: detailShow } = useDetail()
+const { visible: detailVisible, item: detailItem, styles: detailStyles, show: detailShow, hide: detailHide } = useDetail()
 function handleDetailUpdate(item: TodoItem): void {
   console.warn(item)
 }
@@ -72,6 +76,7 @@ async function handleSetPriority(p: Priority): Promise<void> {
   hide()
   await load()
 }
+
 async function handleSetExpiration(expiration: number): Promise<void> {
   if (item.value === null) {
     return
@@ -90,6 +95,21 @@ async function handleRemoveByContextmenu(): Promise<void> {
 }
 
 const showTrans = ref<boolean>(import.meta.env.DEV)
+
+const operatePanelRef = useTemplateRef('operate-panel-ref')
+const operatePanelEl = computed<HTMLElement>(() => operatePanelRef.value?.$el)
+useClickAway(operatePanelEl, hide)
+
+const todoDetailRef = useTemplateRef('todo-detail-ref')
+const todoDetailEl = computed<HTMLElement>(() => todoDetailRef.value?.$el)
+useClickAway(todoDetailEl, detailHide)
+
+const todoInputRef = useTemplateRef('todo-input-ref')
+const todoInputEl = computed<HTMLElement>(() => todoInputRef.value?.$el)
+useClickAway(todoInputEl, () => {
+  console.warn('hide input')
+  handleBlur()
+})
 </script>
 
 <template>
@@ -107,52 +127,29 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
 
     <section class="main-area">
       <div v-for="group in todos" :key="group.uuid" class="group">
-        <div class="group-title">
-          <div class="name">
-            {{ group.name }}
-          </div>
-          <div class="count">
-            {{ group.todoSize }}
-          </div>
-          <div class="separate" />
-          <VIcon class="add" @click="showAddInput(group.uuid)">
-            <Plus />
-          </VIcon>
-        </div>
-        <TodoInput v-show="group.uuid === activeAddInput" :group="activeAddInput" @submit="handleAddTodo"
-          @blur="handleBlur" />
+        <GroupHeader :name="group.name" :count="group.todoSize" @add="showAddInput(group.uuid)" @update="(text: string) => handleGroupUpdate(group.uuid, text)" />
+        <TodoInput v-show="group.uuid === activeAddInput" ref="todo-input-ref" :group="activeAddInput" @submit="handleAddTodo" @blur="handleBlur" />
         <div class="todo-list">
-          <TodoCard v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
+          <TodoCard v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
         </div>
-        <div class="group-sub-title">
-          <div class="name">
-            已完成
-          </div>
-          <div class="count">
-            {{ group.doneSize }}
-          </div>
-        </div>
+        <GroupSubHeader :count="group.doneSize" />
         <div class="todo-list">
-          <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone"
-            @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
+          <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
         </div>
       </div>
     </section>
 
-    <TodoOperatePanel v-show="visible" :style="styles" @set-priority="handleSetPriority"
-      @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
-
-    <TodoDetail v-show="detailVisible" :item="detailItem" :style="detailStyles" @update="handleDetailUpdate" />
+    <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
+    <TodoDetail v-show="detailVisible" ref="todo-detail-ref" :item="detailItem" :style="detailStyles" @update="handleDetailUpdate" />
   </div>
 </template>
 
 <style lang="less" scoped>
 .todo-layout {
-  --priority-p1: #ff4d4f;
-  --priority-p2: #faad14;
-  --priority-p3: #1890ff;
-  --priority-p4: #696969;
+  --priority-p1: var(--v-c-error);
+  --priority-p2: var(--v-c-warning);
+  --priority-p3: var(--v-c-success);
+  --priority-p4: var(--v-c-primary);
 }
 
 .todo-layout {
@@ -178,43 +175,8 @@ const showTrans = ref<boolean>(import.meta.env.DEV)
   .group {
     flex: 0 0 300px;
 
-    .group-title {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      display: flex;
-      font-size: 18px;
+    .todo-input {
       margin-bottom: 12px;
-
-      .name {
-        font-weight: bolder;
-      }
-
-      .count {
-        margin-left: 8px;
-        color: #949494;
-      }
-
-      .separate {
-        flex: 1;
-      }
-
-      .add {
-        cursor: pointer;
-      }
-    }
-
-    .group-sub-title {
-      font-weight: bold;
-      font-size: 14px;
-      margin: 6px 0;
-      display: flex;
-      flex-direction: row;
-
-      .count {
-        margin-left: 8px;
-        color: #949494;
-      }
     }
   }
 

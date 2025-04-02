@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { Theme } from '../../components/v-checkbox/constant'
 import type { Priority, TodoItem } from './type'
 import { computed, toRefs } from 'vue'
 import { VCheckbox } from '../../components'
+import { THEME_ERROR, THEME_PRIMARY, THEME_SUCCESS, THEME_WARNING } from '../../components/v-checkbox/constant'
 import { convertExpiration2Text } from './expiration'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
-import { Theme, THEME_ERROR, THEME_PRIMARY, THEME_SUCCESS, THEME_WARNING } from '../../components/v-checkbox/constant'
 
 const props = defineProps<{ item: TodoItem }>()
 const emit = defineEmits<{
@@ -57,7 +58,7 @@ function handleClick(e: MouseEvent): void {
 <template>
   <div :class="classList" @contextmenu="handleContextmenu" @click="handleClick">
     <div class="action-container">
-      <VCheckbox :checked="done" @click="switchDone" :theme="theme" />
+      <VCheckbox :checked="done" :theme="theme" @click="switchDone" />
     </div>
     <div class="content-container">
       <div class="todo-card__title">
@@ -74,19 +75,25 @@ function handleClick(e: MouseEvent): void {
 .todo-card {
   font-size: 16px;
   color: #000000;
+  --background: #ffffff;
 
   &--done {
     color: #bebebe;
   }
+
+  &:hover {
+    --background: #f9f9f9;
+  }
 }
 
 .todo-card {
-  background-color: #ffffff;
   box-shadow: 4px 4px 10px #2222221a;
   border-radius: 8px;
   padding: 4px 8px;
   display: flex;
   flex-direction: row;
+  background-color: var(--background);
+  cursor: pointer;
 
   .action-container {
     height: 24px;

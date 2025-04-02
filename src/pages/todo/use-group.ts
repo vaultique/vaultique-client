@@ -23,5 +23,17 @@ export default function useGroup() {
     name.value = ''
   }
 
-  return { name, list, load, add }
+  async function rename(uuid: string, text: string): Promise<void> {
+    const group = list.value.find(x => x.uuid === uuid)
+    if (group === undefined) {
+      return
+    }
+    if (group.name === text) {
+      return
+    }
+    group.name = text
+    await writeTextFile(GROUP_FILE_PATH, JSON.stringify(list.value), { baseDir: BaseDirectory.Document })
+  }
+
+  return { name, list, load, add, rename }
 }

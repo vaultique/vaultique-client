@@ -134,6 +134,7 @@ function handleSetExpiration(e: 'today' | 'tomorror' | 'week-end'): void {
 
 <style lang="less" scoped>
 .todo-input {
+  box-shadow: 4px 4px 10px #2222221a;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -154,6 +155,7 @@ function handleSetExpiration(e: 'today' | 'tomorror' | 'week-end'): void {
     .tips {
       display: flex;
       flex-direction: row;
+      gap: 4px;
 
       .tip {
         font-size: 18px;
@@ -178,6 +180,8 @@ function handleSetExpiration(e: 'today' | 'tomorror' | 'week-end'): void {
   }
 
   &__action {
+    margin-top: 8px;
+
     .action {
       font-size: 18px;
       cursor: pointer;

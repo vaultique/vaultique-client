@@ -6,7 +6,7 @@ import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail,
 import { useContextmenu, useDetail, useGroup, useTodo } from './hook'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
-const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration } = useTodo()
 
 init()
 
@@ -94,8 +94,6 @@ async function handleRemoveByContextmenu(): Promise<void> {
   await load()
 }
 
-const showTrans = ref<boolean>(import.meta.env.DEV)
-
 const operatePanelRef = useTemplateRef('operate-panel-ref')
 const operatePanelEl = computed<HTMLElement>(() => operatePanelRef.value?.$el)
 useClickAway(operatePanelEl, hide)
@@ -107,7 +105,6 @@ useClickAway(todoDetailEl, detailHide)
 const todoInputRef = useTemplateRef('todo-input-ref')
 const todoInputEl = computed<HTMLElement>(() => todoInputRef.value?.$el)
 useClickAway(todoInputEl, () => {
-  console.warn('hide input')
   handleBlur()
 })
 </script>
@@ -115,12 +112,6 @@ useClickAway(todoInputEl, () => {
 <template>
   <div class="todo-layout">
     <HeaderBar />
-    <div v-if="showTrans">
-      <button @click="trans">
-        转换
-      </button>
-    </div>
-
     <section class="main-area">
       <div v-for="group in todos" :key="group.uuid" class="group">
         <GroupHeader :name="group.name" :count="group.todoSize" @add="showAddInput(group.uuid)" @update="(text: string) => handleGroupUpdate(group.uuid, text)" />

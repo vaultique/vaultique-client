@@ -6,10 +6,6 @@ import { TOOL_RECORD } from '../../router'
 
 const router = useRouter()
 
-function jumpToToolList(): void {
-  router.back()
-}
-
 function jumpTool(item: { value: string, label: string }): void {
   router.push(`/tool/${item.value}`)
   getCurrentWindow().setTitle(item.label)
@@ -21,10 +17,7 @@ const list = Object.values(TOOL_RECORD).map((x) => {
 </script>
 
 <template>
-  <div class="header-bar">
-    <button @click="jumpToToolList">
-      首页
-    </button>
+  <div class="header-bar" data-tauri-drag-region>
     <div class="tool-list">
       <VDropdown :list="list" @select="jumpTool">
         <span>小工具</span>
@@ -36,8 +29,8 @@ const list = Object.values(TOOL_RECORD).map((x) => {
 <style lang="less" scoped>
 .header-bar {
   display: flex;
-  background-color: #f0f0f0;
-  justify-content: space-between;
+  background-color: #f2f5fe;
+  justify-content: flex-end;
   align-items: center;
   padding: 10px;
 }

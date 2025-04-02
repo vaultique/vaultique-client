@@ -2,10 +2,10 @@
 import type { Group, Priority, TodoItem } from './type'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useClickAway } from '../../hook/popover'
-import { GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
+import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
 import { useContextmenu, useDetail, useGroup, useTodo } from './hook'
 
-const { name: groupName, list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
+const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
 const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans } = useTodo()
 
 init()
@@ -24,8 +24,8 @@ const todos = computed<(Group & { todoSize: number, todoList: TodoItem[], doneSi
   })
 })
 
-async function handleAddGroup(): Promise<void> {
-  await addGroup()
+async function handleAddGroup(text: string): Promise<void> {
+  await addGroup(text)
   await loadGroupList()
 }
 
@@ -115,12 +115,8 @@ useClickAway(todoInputEl, () => {
 <template>
   <div class="todo-layout">
     <HeaderBar />
-    <div>
-      <button @click="handleAddGroup">
-        添加分组
-      </button>
-      <input v-model="groupName" type="text">
-      <button v-if="showTrans" @click="trans">
+    <div v-if="showTrans">
+      <button @click="trans">
         转换
       </button>
     </div>
@@ -137,6 +133,7 @@ useClickAway(todoInputEl, () => {
           <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
         </div>
       </div>
+      <GroupAdd @submit="handleAddGroup" />
     </section>
 
     <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
@@ -178,6 +175,11 @@ useClickAway(todoInputEl, () => {
     .todo-input {
       margin-bottom: 12px;
     }
+  }
+
+  .group-add {
+    flex: 0 0 300px;
+    height: 24px;
   }
 
   .todo-list {

@@ -5,7 +5,6 @@ import { generateUuid } from '../../invokes/uuid'
 import { GROUP_FILE_PATH } from './constant'
 
 export default function useGroup() {
-  const name = ref<string>('')
   const list = ref<Group[]>([])
 
   async function load(): Promise<void> {
@@ -13,14 +12,13 @@ export default function useGroup() {
     list.value = JSON.parse(content)
   }
 
-  async function add(): Promise<void> {
-    if (typeof name.value !== 'string' || name.value.trim() === '') {
+  async function add(name: string): Promise<void> {
+    if (typeof name !== 'string' || name.trim() === '') {
       return
     }
-    const group: Group = { uuid: await generateUuid(), name: name.value }
+    const group: Group = { uuid: await generateUuid(), name }
     list.value.push(group)
     await writeTextFile(GROUP_FILE_PATH, JSON.stringify(list.value), { baseDir: BaseDirectory.Document })
-    name.value = ''
   }
 
   async function rename(uuid: string, text: string): Promise<void> {
@@ -35,5 +33,5 @@ export default function useGroup() {
     await writeTextFile(GROUP_FILE_PATH, JSON.stringify(list.value), { baseDir: BaseDirectory.Document })
   }
 
-  return { name, list, load, add, rename }
+  return { list, load, add, rename }
 }

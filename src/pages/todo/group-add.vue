@@ -33,7 +33,7 @@ function handleSubmit(): void {
 </script>
 
 <template>
-  <div class="group-add" @click="handleEdit">
+  <div class="group-add" :class="{ 'group-add--edit': edit }" @click="handleEdit">
     <VIcon v-show="!edit">
       <Plus />
     </VIcon>
@@ -51,6 +51,11 @@ function handleSubmit(): void {
   flex-direction: row;
   align-items: center;
   gap: 4px;
+  color: var(--v-c-primary);
+
+  &--edit {
+    background-color: #f9f9f9;
+  }
 
   &:hover {
     background-color: #f9f9f9;

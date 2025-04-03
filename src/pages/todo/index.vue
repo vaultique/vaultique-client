@@ -159,9 +159,11 @@ useClickAway(todoInputEl, () => {
   gap: 15px;
   padding: 10px;
   background-color: #f2f5fe;
+  overflow-y: hidden;
 
   .group {
     flex: 0 0 300px;
+    overflow-y: auto;
 
     .todo-input {
       margin-bottom: 12px;

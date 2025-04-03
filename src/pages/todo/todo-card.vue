@@ -58,7 +58,7 @@ function handleClick(e: MouseEvent): void {
 <template>
   <div :class="classList" @contextmenu="handleContextmenu" @click="handleClick">
     <div class="action-container">
-      <VCheckbox :checked="done" :theme="theme" @click="switchDone" />
+      <VCheckbox :checked="done" :theme="theme" @click.stop="switchDone" />
     </div>
     <div class="content-container">
       <div class="todo-card__title">

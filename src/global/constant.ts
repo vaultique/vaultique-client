@@ -1,5 +1,5 @@
-const BASE_DIR = 'BaiduSyncdisk'
-const APP_DIR = import.meta.env.DEV ? 'vaultique_test' : 'vaultique'
+const BASE_DIR = 'Nutstore'
+const APP_DIR = import.meta.env.DEV ? 'vaultique' : 'vaultique'
 
 // log module
 const LOG_MODULE_DIR = 'log'

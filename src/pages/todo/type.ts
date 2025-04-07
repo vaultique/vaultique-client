@@ -17,6 +17,7 @@ export type TodoItem = {
   priority: Priority // 优先级
   repeat: Repeat // 重复模式
   expiration?: number // 到期时间
+  doneTime?: number // 完成时间
 }
 
 export type Group = {

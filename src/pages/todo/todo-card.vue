@@ -81,15 +81,17 @@ function handleClick(e: MouseEvent): void {
     --background: #f9f9f9;
   }
 
-  --color: #bebebe;
+  --color: #000000;
+  --time-color: #bebebe;
 
   &--expirated {
-    --color: var(--priority-p1);
+    --time-color: var(--priority-p1);
   }
 
   &--done,
   &--done&--expirated {
     --color: #bebebe;
+    --time-color: #bebebe;
   }
 }
 
@@ -102,6 +104,7 @@ function handleClick(e: MouseEvent): void {
   background-color: var(--background);
   cursor: pointer;
   font-size: 16px;
+  color: var(--color);
 
   .action-container {
     height: 24px;
@@ -123,7 +126,7 @@ function handleClick(e: MouseEvent): void {
 
   .expiration {
     font-size: 14px;
-    color: var(--color);
+    color: var(--time-color);
   }
 }
 </style>

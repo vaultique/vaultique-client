@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import type { Priority } from './type'
 import { Delete, Flag, Sunny, Sunrise, Timer } from '@element-plus/icons-vue'
-import { VIcon } from '../../components'
+import { computed } from 'vue'
+import { VCheckbox, VIcon } from '../../components'
 import { convertexpirationText2Timestamp } from './expiration'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
+
+const props = defineProps<{
+  checked: boolean
+}>()
 
 const emit = defineEmits<{
   setPriority: [value: Priority]
   setExpiration: [value: number]
+  setRepeat: []
   remove: []
 }>()
+
+const checked = computed<boolean>(() => props.checked)
 
 function handleSetPriority(priority: Priority): void {
   emit('setPriority', priority)
@@ -21,6 +29,10 @@ function handleSetExpiration(e: 'today' | 'tomorror' | 'week-end'): void {
 
 function handleRemove(): void {
   emit('remove')
+}
+
+function handleRepeat(): void {
+  emit('setRepeat')
 }
 </script>
 
@@ -63,18 +75,26 @@ function handleRemove(): void {
       </VIcon>
       <div>删除</div>
     </div>
+    <div class="operate-line" @click="handleRepeat">
+      <VCheckbox :checked="checked" />
+      <div>设为重复任务</div>
+    </div>
   </div>
 </template>
 
 <style lang="less" scoped>
 .todo-operate-panel {
+  --gap: 12px;
+}
+
+.todo-operate-panel {
   background-color: #ffffff;
   border-radius: 4px;
   padding: 8px 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
   position: absolute;
   z-index: 1000;
-  width: 100px;
+  width: 150px;
 
   .operate-line {
     display: flex;
@@ -84,21 +104,21 @@ function handleRemove(): void {
     border-radius: 4px;
     padding: 2px 4px;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: var(--gap);
 
     &:hover {
-      background-color: #e9e9e9;
+      background-color: #f9f9f9;
     }
 
     .v-icon {
-      margin-right: 4px;
+      margin-right: 8px;
     }
   }
 
   .title {
     color: #5f5f5f;
     font-size: 14px;
-    margin-bottom: 4px;
+    margin-bottom: var(--gap);
     padding: 0 4px;
   }
 
@@ -108,6 +128,7 @@ function handleRemove(): void {
     flex-direction: row;
     justify-content: space-between;
     padding: 0 4px;
+    margin-bottom: var(--gap);;
   }
 
   .priority,

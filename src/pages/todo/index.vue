@@ -7,16 +7,21 @@ import { VPopover } from '../../components'
 import { useClickAway } from '../../hook/popover'
 import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
 import { useContextmenu, useGroup, useTodo } from './hook'
+import { REPEAT_WHEN_DONE } from './type'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
-const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, save } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, setRepeat, save } = useTodo()
 
 init()
 
 const todos = computed<(Group & { todoSize: number, todoList: (TodoItem & { hash: string })[], doneSize: number, doneList: (TodoItem & { hash: string })[] })[]>(() => {
   return groupList.value.map((group) => {
     const todo = todoList.value.filter(item => item.group === group.uuid).map(x => ({ ...x, hash: hash(x) }))
-    const done = doneList.value.filter(item => item.group === group.uuid).map(x => ({ ...x, hash: hash(x) }))
+    const done = doneList
+      .value
+      .filter(item => item.group === group.uuid)
+      .map(x => ({ ...x, hash: hash(x) }))
+      .sort((a, b) => (b.doneTime ?? 0) - (a.doneTime ?? 0))
     return {
       ...group,
       todoSize: todo.length,
@@ -88,6 +93,16 @@ async function handleSetExpiration(expiration: number): Promise<void> {
   hide()
   await load()
 }
+
+async function handleSetRepeat(): Promise<void> {
+  if (item.value === null) {
+    return
+  }
+  await setRepeat(item.value.uuid, REPEAT_WHEN_DONE)
+  hide()
+  await load()
+}
+
 async function handleRemoveByContextmenu(): Promise<void> {
   if (item.value === null) {
     return
@@ -135,7 +150,7 @@ useClickAway(todoInputEl, () => {
       <GroupAdd @submit="handleAddGroup" />
     </section>
 
-    <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
+    <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :checked="true" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @set-repeat="handleSetRepeat" @remove="handleRemoveByContextmenu" />
   </div>
 </template>
 

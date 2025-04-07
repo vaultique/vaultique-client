@@ -1,9 +1,11 @@
-import type { Priority, TodoItem } from './type'
+import type { Priority, Repeat, TodoItem } from './type'
 import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from '@tauri-apps/plugin-fs'
+import dayjs from 'dayjs'
+import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { TODO_DIR } from '../../global/constant'
 import { addLog } from '../../util/log'
-import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from './type'
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_WHEN_DONE } from './type'
 
 export default function useTodo() {
   const list = ref<TodoItem[]>([])
@@ -59,8 +61,18 @@ export default function useTodo() {
       return
     }
     item.done = !item.done
+    if (item.done === true) {
+      item.doneTime = dayjs().valueOf()
+    }
+    else {
+      delete item.doneTime
+    }
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
     await addLog({ module: 'todo', content: `set ${item.title} done` })
+    if (item.done && item.repeat === REPEAT_WHEN_DONE) {
+      const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().startOf('day').add(1, 'day').valueOf() }
+      await add(next)
+    }
   }
 
   async function setUnDone(uuid: string): Promise<void> {
@@ -93,6 +105,16 @@ export default function useTodo() {
     await addLog({ module: 'todo', content: `set ${item.title} expiration ${expiration}` })
   }
 
+  async function setRepeat(uuid: string, repeat: Repeat): Promise<void> {
+    const item = list.value.find(x => x.uuid === uuid)
+    if (item === undefined) {
+      return
+    }
+    item.repeat = repeat
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} repeat ${repeat}` })
+  }
+
   async function save(item: TodoItem): Promise<void> {
     await writeTextFile(`${TODO_DIR}\\${item.uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
     await addLog({ module: 'todo', content: `change ${item.title}` })
@@ -119,5 +141,5 @@ export default function useTodo() {
     return typeof uuid === 'string' && uuid.length === 36
   }
 
-  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, save, trans }
+  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, setRepeat, save, trans }
 }

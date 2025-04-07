@@ -68,7 +68,6 @@ const classList = computed<Record<string, boolean>>(() => {
     --border-color: var(--v-c-warning);
   }
 
-
   &--primary&--done,
   &--success&--done,
   &--error&--done,

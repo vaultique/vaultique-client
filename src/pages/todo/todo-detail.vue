@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { debounce } from 'lodash';
-import { ref, watch } from 'vue';
-import type { TodoItem } from './type';
+import type { TodoItem } from './type'
+import { debounce } from 'lodash'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{ item: TodoItem | null }>()
 
@@ -13,7 +13,6 @@ const deboundSave = debounce(save, 0)
 
 const titleFocus = ref<boolean>(false)
 const contentFocus = ref<boolean>(false)
-
 
 const title = ref<string>(props.item?.title ?? '')
 const content = ref<string>(props.item?.content ?? '')
@@ -31,7 +30,7 @@ function save(title: string | null, content: string | null): void {
   delete (item as any).hash
   emit('update', item)
 }
-  
+
 function handleTitleBlur(): void {
   titleFocus.value = false
   checkForSave()
@@ -55,13 +54,13 @@ function checkForSave() {
 <template>
   <div class="todo-detail">
     <div class="title">
-      <input  v-model="title" type="text" @focus="titleFocus = true" @blur="handleTitleBlur">
+      <input v-model="title" type="text" @focus="titleFocus = true" @blur="handleTitleBlur">
     </div>
     <div class="content">
       <div class="hide-content">
         {{ content }}
       </div>
-      <textarea  v-model="content" placeholder="输入内容" @focus="contentFocus = true" @blur="handleContentBlur" />
+      <textarea v-model="content" placeholder="输入内容" @focus="contentFocus = true" @blur="handleContentBlur" />
     </div>
   </div>
 </template>

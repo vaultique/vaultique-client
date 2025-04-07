@@ -1,6 +1,9 @@
 import type { Component } from 'vue'
 import { Sunny, Sunrise, Timer } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
+import weekday from 'dayjs/plugin/weekday'
+
+dayjs.extend(weekday)
 
 export function convertExpiration2Text(expiration: number | undefined): string {
   if (expiration === undefined) {
@@ -64,7 +67,7 @@ export function convertexpirationText2Timestamp(text: 'today' | 'tomorror' | 'we
       expiration = today.add(1, 'day').valueOf()
       break
     case 'week-end':
-      expiration = today.endOf('week').valueOf()
+      expiration = dayjs().weekday(7).endOf('day').valueOf()
       break
   }
   return expiration

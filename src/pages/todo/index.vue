@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Group, Priority, TodoFilter, TodoItem } from './type'
 import { NScrollbar } from 'naive-ui'
 import hash from 'object-hash'
 import { computed, ref, useTemplateRef } from 'vue'
@@ -7,7 +8,6 @@ import { useClickAway } from '../../hook/popover'
 import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
 import { isExpirationExpired, isExpirationToday, isExpirationWeek } from './expiration'
 import { useContextmenu, useGroup, useTodo } from './hook'
-import type { Group, Priority, TodoFilter, TodoItem } from './type'
 import { REPEAT_WHEN_DONE, TODO_FILTER_EXPIRED, TODO_FILTER_NONE, TODO_FILTER_TODAY, TODO_FILTER_WEEK } from './type'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
@@ -26,7 +26,7 @@ const todos = computed<(Group & { todoSize: number, todoList: (TodoItem & { hash
           return item.group === group.uuid && isExpirationToday(item.expiration)
         }
         if (filter.value === TODO_FILTER_WEEK) {
-          return item.group === group.uuid && isExpirationWeek(item.expiration) 
+          return item.group === group.uuid && isExpirationWeek(item.expiration)
         }
         if (filter.value === TODO_FILTER_EXPIRED) {
           return item.group === group.uuid && isExpirationExpired(item.expiration)
@@ -36,12 +36,12 @@ const todos = computed<(Group & { todoSize: number, todoList: (TodoItem & { hash
       .map(x => ({ ...x, hash: hash(x) }))
     const done = doneList
       .value
-      .filter(item => {
+      .filter((item) => {
         if (filter.value === TODO_FILTER_TODAY) {
           return item.group === group.uuid && isExpirationToday(item.expiration)
         }
         if (filter.value === TODO_FILTER_WEEK) {
-          return item.group === group.uuid && isExpirationWeek(item.expiration) 
+          return item.group === group.uuid && isExpirationWeek(item.expiration)
         }
         if (filter.value === TODO_FILTER_EXPIRED) {
           return item.group === group.uuid && isExpirationExpired(item.expiration)

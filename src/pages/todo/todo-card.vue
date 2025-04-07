@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Theme } from '../../components/v-checkbox/constant'
 import type { Priority, TodoItem } from './type'
+import dayjs from 'dayjs'
 import { computed, toRefs } from 'vue'
 import { VCheckbox } from '../../components'
 import { THEME_ERROR, THEME_PRIMARY, THEME_SUCCESS, THEME_WARNING } from '../../components/v-checkbox/constant'
@@ -20,6 +21,7 @@ const { item } = toRefs(props)
 const done = computed<boolean>(() => item.value.done)
 const title = computed<string>(() => item.value.title)
 const expiration = computed<string>(() => convertExpiration2Text(item.value.expiration))
+const expirated = computed<boolean>(() => item.value.expiration !== undefined && (item.value.expiration < dayjs().valueOf()))
 const classList = computed(() => {
   return {
     'todo-card': true,
@@ -64,7 +66,7 @@ function handleClick(e: MouseEvent): void {
       <div class="todo-card__title">
         {{ title }}
       </div>
-      <div v-if="expiration !== ''" class="expiration">
+      <div v-if="expiration !== ''" class="expiration" :class="{ 'todo-card--expirated': expirated, 'todo-card--done': done }">
         {{ expiration }}
       </div>
     </div>
@@ -73,27 +75,33 @@ function handleClick(e: MouseEvent): void {
 
 <style lang="less" scoped>
 .todo-card {
-  font-size: 16px;
-  color: #000000;
   --background: #ffffff;
-
-  &--done {
-    color: #bebebe;
-  }
 
   &:hover {
     --background: #f9f9f9;
   }
+
+  --color: #bebebe;
+
+  &--expirated {
+    --color: var(--priority-p1);
+  }
+
+  &--done,
+  &--done&--expirated {
+    --color: #bebebe;
+  }
 }
 
 .todo-card {
-  box-shadow: 4px 4px 10px #2222221a;
+  box-shadow: var(--shadow);
   border-radius: 8px;
   padding: 4px 8px;
   display: flex;
   flex-direction: row;
   background-color: var(--background);
   cursor: pointer;
+  font-size: 16px;
 
   .action-container {
     height: 24px;
@@ -115,7 +123,7 @@ function handleClick(e: MouseEvent): void {
 
   .expiration {
     font-size: 14px;
-    color: #5a5a5a;
+    color: var(--color);
   }
 }
 </style>

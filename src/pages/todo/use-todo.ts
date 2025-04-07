@@ -93,6 +93,11 @@ export default function useTodo() {
     await addLog({ module: 'todo', content: `set ${item.title} expiration ${expiration}` })
   }
 
+  async function save(item: TodoItem): Promise<void> {
+    await writeTextFile(`${TODO_DIR}\\${item.uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `change ${item.title}` })
+  }
+
   async function trans(): Promise<void> {
     const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document })
     for await (const entry of entries) {
@@ -114,5 +119,5 @@ export default function useTodo() {
     return typeof uuid === 'string' && uuid.length === 36
   }
 
-  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, trans }
+  return { list, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, save, trans }
 }

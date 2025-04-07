@@ -15,7 +15,7 @@ type DropDownProps = {
   disabled?: boolean
 }
 
-defineOptions({ name: 'HebinDropDown' })
+defineOptions({ name: 'VDropdown' })
 const props = withDefaults(defineProps<DropDownProps>(), {
   list: () => [],
   trigger: 'click',
@@ -28,7 +28,7 @@ const emit = defineEmits<{
   select: [value: Option]
 }>()
 
-const DROP_DOWN_PREFIX = 'hebin-drop-down'
+const DROP_DOWN_PREFIX = 'v-dropdown'
 
 const contentEl = ref<HTMLElement>()
 const arrowEl = ref<HTMLElement>()
@@ -89,7 +89,7 @@ function generateClassNames(prefix: string, ...args: (string | { label: string, 
   return li
 }
 
-const LIST_PREFIX = 'hebin-list'
+const LIST_PREFIX = 'v-list'
 const listStyles = computed<CSSProperties>(() => {
   const result: CSSProperties = {}
   return result

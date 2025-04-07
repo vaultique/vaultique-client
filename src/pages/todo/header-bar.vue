@@ -33,6 +33,10 @@ const list = Object.values(TOOL_RECORD).map((x) => {
   justify-content: flex-end;
   align-items: center;
   padding: 10px;
+
+  &:hover {
+    background-color: #f2f5fe98;
+  }
 }
 
 .tool-list {

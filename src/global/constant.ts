@@ -1,5 +1,5 @@
 const BASE_DIR = 'Nutstore'
-const APP_DIR = import.meta.env.DEV ? 'vaultique' : 'vaultique'
+const APP_DIR = import.meta.env.DEV ? 'vaultique_test' : 'vaultique'
 
 // log module
 const LOG_MODULE_DIR = 'log'

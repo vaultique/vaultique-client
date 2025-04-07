@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ToolCard from '@/components/tool-card/index.vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { TOOL_RECORD } from '../../router'
+import ToolCard from './tool-card.vue'
 
 const router = useRouter()
 

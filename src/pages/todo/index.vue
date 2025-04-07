@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import type { Group, Priority, TodoItem } from './type'
+import { NScrollbar } from 'naive-ui'
+import hash from 'object-hash'
 import { computed, ref, useTemplateRef } from 'vue'
+import { VPopover } from '../../components'
 import { useClickAway } from '../../hook/popover'
 import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
-import { useContextmenu, useDetail, useGroup, useTodo } from './hook'
+import { useContextmenu, useGroup, useTodo } from './hook'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
-const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, save } = useTodo()
 
 init()
 
-const todos = computed<(Group & { todoSize: number, todoList: TodoItem[], doneSize: number, doneList: TodoItem[] })[]>(() => {
+const todos = computed<(Group & { todoSize: number, todoList: (TodoItem & { hash: string })[], doneSize: number, doneList: (TodoItem & { hash: string })[] })[]>(() => {
   return groupList.value.map((group) => {
-    const todo = todoList.value.filter(item => item.group === group.uuid)
-    const done = doneList.value.filter(item => item.group === group.uuid)
+    const todo = todoList.value.filter(item => item.group === group.uuid).map(x => ({ ...x, hash: hash(x) }))
+    const done = doneList.value.filter(item => item.group === group.uuid).map(x => ({ ...x, hash: hash(x) }))
     return {
       ...group,
       todoSize: todo.length,
@@ -62,9 +65,9 @@ function handleBlur(): void {
   activeAddInput.value = ''
 }
 
-const { visible: detailVisible, item: detailItem, styles: detailStyles, show: detailShow, hide: detailHide } = useDetail()
-function handleDetailUpdate(item: TodoItem): void {
-  console.warn(item)
+async function handleDetailUpdate(item: TodoItem): Promise<void> {
+  await save(item)
+  await load()
 }
 
 const { visible, styles, item, handleContextMenu, hide } = useContextmenu()
@@ -98,10 +101,6 @@ const operatePanelRef = useTemplateRef('operate-panel-ref')
 const operatePanelEl = computed<HTMLElement>(() => operatePanelRef.value?.$el)
 useClickAway(operatePanelEl, hide)
 
-const todoDetailRef = useTemplateRef('todo-detail-ref')
-const todoDetailEl = computed<HTMLElement>(() => todoDetailRef.value?.$el)
-useClickAway(todoDetailEl, detailHide)
-
 const todoInputRef = useTemplateRef('todo-input-ref')
 const todoInputEl = computed<HTMLElement>(() => todoInputRef.value?.$el)
 useClickAway(todoInputEl, () => {
@@ -114,21 +113,29 @@ useClickAway(todoInputEl, () => {
     <HeaderBar />
     <section class="main-area">
       <div v-for="group in todos" :key="group.uuid" class="group">
-        <GroupHeader :name="group.name" :count="group.todoSize" @add="showAddInput(group.uuid)" @update="(text: string) => handleGroupUpdate(group.uuid, text)" />
-        <TodoInput v-show="group.uuid === activeAddInput" ref="todo-input-ref" :group="activeAddInput" @submit="handleAddTodo" @blur="handleBlur" />
-        <div class="todo-list">
-          <TodoCard v-for="n in group.todoList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
-        </div>
-        <GroupSubHeader :count="group.doneSize" />
-        <div class="todo-list">
-          <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" @select="detailShow" />
-        </div>
+        <NScrollbar>
+          <GroupHeader :name="group.name" :count="group.todoSize" @add="showAddInput(group.uuid)" @update="(text: string) => handleGroupUpdate(group.uuid, text)" />
+          <TodoInput v-show="group.uuid === activeAddInput" ref="todo-input-ref" :group="activeAddInput" @submit="handleAddTodo" @blur="handleBlur" />
+          <div class="todo-list">
+            <template v-for="n in group.todoList" :key="n.hash">
+              <VPopover arrow placement="right-start">
+                <TodoCard :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" />
+                <template #content>
+                  <TodoDetail :item="n" @update="handleDetailUpdate" />
+                </template>
+              </VPopover>
+            </template>
+          </div>
+          <GroupSubHeader :count="group.doneSize" />
+          <div class="todo-list">
+            <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" />
+          </div>
+        </NScrollbar>
       </div>
       <GroupAdd @submit="handleAddGroup" />
     </section>
 
     <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @remove="handleRemoveByContextmenu" />
-    <TodoDetail v-show="detailVisible" ref="todo-detail-ref" :item="detailItem" :style="detailStyles" @update="handleDetailUpdate" />
   </div>
 </template>
 
@@ -153,7 +160,6 @@ useClickAway(todoInputEl, () => {
 
 .main-area {
   flex: 1;
-  overflow-x: auto;
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -163,7 +169,6 @@ useClickAway(todoInputEl, () => {
 
   .group {
     flex: 0 0 300px;
-    overflow-y: auto;
 
     .todo-input {
       margin-bottom: 12px;

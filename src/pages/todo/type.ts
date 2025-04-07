@@ -24,3 +24,10 @@ export type Group = {
   uuid: string
   name: string
 }
+
+export const TODO_FILTER_NONE = 0 as const
+export const TODO_FILTER_TODAY = 1 as const
+export const TODO_FILTER_WEEK = 2 as const
+export const TODO_FILTER_EXPIRED = -1 as const
+
+export type TodoFilter = typeof TODO_FILTER_NONE | typeof TODO_FILTER_TODAY | typeof TODO_FILTER_WEEK | typeof TODO_FILTER_EXPIRED

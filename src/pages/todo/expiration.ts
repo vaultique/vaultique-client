@@ -20,6 +20,23 @@ export function convertExpiration2Text(expiration: number | undefined): string {
   return dayjs(expiration).format('YYYY-MM-DD')
 }
 
+export function isExpirationToday(expiration: number | undefined): boolean {
+  const today = dayjs().endOf('day').valueOf()
+  return today === expiration
+}
+
+
+export function isExpirationWeek(expiration: number | undefined): boolean {
+  const start = dayjs().startOf('week').valueOf()
+  const end = dayjs().endOf("week").valueOf()
+  return expiration !== undefined && expiration >= start && expiration <= end
+}
+
+export function isExpirationExpired(expiration: number | undefined): boolean {
+  const today = dayjs().startOf('day').valueOf()
+  return expiration !== undefined && expiration < today
+}
+
 export function convertExpiration2Component(expiration: number | undefined): Component | null {
   if (expiration === undefined) {
     return null

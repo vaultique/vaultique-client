@@ -1,25 +1,53 @@
 <script setup lang="ts">
-import type { Group, Priority, TodoItem } from './type'
 import { NScrollbar } from 'naive-ui'
 import hash from 'object-hash'
 import { computed, ref, useTemplateRef } from 'vue'
 import { VPopover } from '../../components'
 import { useClickAway } from '../../hook/popover'
 import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
+import { isExpirationExpired, isExpirationToday, isExpirationWeek } from './expiration'
 import { useContextmenu, useGroup, useTodo } from './hook'
-import { REPEAT_WHEN_DONE } from './type'
+import type { Group, Priority, TodoFilter, TodoItem } from './type'
+import { REPEAT_WHEN_DONE, TODO_FILTER_EXPIRED, TODO_FILTER_NONE, TODO_FILTER_TODAY, TODO_FILTER_WEEK } from './type'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
 const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, setRepeat, save } = useTodo()
 
 init()
 
+const filter = ref<TodoFilter>(TODO_FILTER_NONE)
+
 const todos = computed<(Group & { todoSize: number, todoList: (TodoItem & { hash: string })[], doneSize: number, doneList: (TodoItem & { hash: string })[] })[]>(() => {
   return groupList.value.map((group) => {
-    const todo = todoList.value.filter(item => item.group === group.uuid).map(x => ({ ...x, hash: hash(x) }))
+    const todo = todoList
+      .value
+      .filter((item) => {
+        if (filter.value === TODO_FILTER_TODAY) {
+          return item.group === group.uuid && isExpirationToday(item.expiration)
+        }
+        if (filter.value === TODO_FILTER_WEEK) {
+          return item.group === group.uuid && isExpirationWeek(item.expiration) 
+        }
+        if (filter.value === TODO_FILTER_EXPIRED) {
+          return item.group === group.uuid && isExpirationExpired(item.expiration)
+        }
+        return item.group === group.uuid
+      })
+      .map(x => ({ ...x, hash: hash(x) }))
     const done = doneList
       .value
-      .filter(item => item.group === group.uuid)
+      .filter(item => {
+        if (filter.value === TODO_FILTER_TODAY) {
+          return item.group === group.uuid && isExpirationToday(item.expiration)
+        }
+        if (filter.value === TODO_FILTER_WEEK) {
+          return item.group === group.uuid && isExpirationWeek(item.expiration) 
+        }
+        if (filter.value === TODO_FILTER_EXPIRED) {
+          return item.group === group.uuid && isExpirationExpired(item.expiration)
+        }
+        return item.group === group.uuid
+      })
       .map(x => ({ ...x, hash: hash(x) }))
       .sort((a, b) => (b.doneTime ?? 0) - (a.doneTime ?? 0))
     return {
@@ -125,7 +153,7 @@ useClickAway(todoInputEl, () => {
 
 <template>
   <div class="todo-layout">
-    <HeaderBar />
+    <HeaderBar v-model="filter" />
     <section class="main-area">
       <div v-for="group in todos" :key="group.uuid" class="group">
         <NScrollbar>

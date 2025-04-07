@@ -29,8 +29,8 @@ export function isExpirationToday(expiration: number | undefined): boolean {
 }
 
 export function isExpirationWeek(expiration: number | undefined): boolean {
-  const start = dayjs().startOf('week').valueOf()
-  const end = dayjs().endOf('week').valueOf()
+  const start = dayjs().weekday(1).startOf('day').valueOf()
+  const end = dayjs().weekday(7).endOf('day').valueOf()
   return expiration !== undefined && expiration >= start && expiration <= end
 }
 

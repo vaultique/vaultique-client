@@ -9,13 +9,14 @@ import useTodo from './use-todo'
 
 const WEEK_HEAD: string[] = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 const { list: cellList, text, next, preview } = useCalendar()
-const { list: todoList } = useTodo()
+const { todoList, doneList } = useTodo()
 
-const list = computed<(Cell & { todo: TodoItem[] })[]>(() => {
+const list = computed<(Cell & { todo: TodoItem[], done: TodoItem[] })[]>(() => {
   return cellList.value.map((x) => {
     return {
       ...x,
       todo: todoList.value.filter(m => m.expiration !== undefined && m.expiration >= x.start && m.expiration <= x.end),
+      done: doneList.value.filter(m => m.expiration !== undefined && m.expiration >= x.start && m.expiration <= x.end),
     }
   })
 })
@@ -41,6 +42,9 @@ const CLASS_MAPPING: Record<Priority, string> = {
       <div v-for="item in list" :key="`${item.date}--${item.day}`" class="body-cell" :class="{ 'current-month': item.inMonth }">
         <div>{{ item.date }}</div>
         <div v-for="todo in item.todo" :key="todo.uuid" class="todo-item" :class="CLASS_MAPPING[todo.priority]">
+          {{ todo.title }}
+        </div>
+        <div v-for="todo in item.done" :key="todo.uuid" class="todo-item todo-item--done">
           {{ todo.title }}
         </div>
       </div>
@@ -109,6 +113,11 @@ const CLASS_MAPPING: Record<Priority, string> = {
 
   .todo-item+.todo-item {
     margin-top: 4px;
+  }
+
+  .todo-item--done {
+    background-color: #d3d3d3;
+    color: #616161;
   }
 
   .todo-item--p1 {

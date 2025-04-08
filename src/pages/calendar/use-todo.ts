@@ -6,14 +6,16 @@ import { TODO_DIR } from '../../global/constant'
 import { validateUuid } from '../../util'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from '../todo/type'
 
-export default function useTodo(): { list: Ref<TodoItem[]> } {
-  const list = ref<TodoItem[]>([])
+export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<TodoItem[]> } {
+  const todoList = ref<TodoItem[]>([])
+  const doneList = ref<TodoItem[]>([])
 
   load()
 
   async function load(): Promise<void> {
     const entries = await readDir(TODO_DIR, { baseDir: BaseDirectory.Document })
     const collect: TodoItem[] = []
+    const doneCollect: TodoItem[] = []
     for (const entry of entries) {
       if (!entry.isFile) {
         continue
@@ -27,6 +29,9 @@ export default function useTodo(): { list: Ref<TodoItem[]> } {
       if (!item.done) {
         collect.push(item)
       }
+      else {
+        doneCollect.push(item)
+      }
     }
     const mapping: Record<Priority, number> = {
       [PRIORITY_P1]: 4,
@@ -34,8 +39,9 @@ export default function useTodo(): { list: Ref<TodoItem[]> } {
       [PRIORITY_P3]: 2,
       [PRIORITY_P4]: 1,
     }
-    list.value = collect.sort((a: TodoItem, b: TodoItem) => mapping[b.priority] - mapping[a.priority])
+    todoList.value = collect.sort((a: TodoItem, b: TodoItem) => mapping[b.priority] - mapping[a.priority])
+    doneList.value = doneCollect.sort((a: TodoItem, b: TodoItem) => (b.doneTime ?? 0) - (a.doneTime ?? 0))
   }
 
-  return { list }
+  return { todoList, doneList }
 }

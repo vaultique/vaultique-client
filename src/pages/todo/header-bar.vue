@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { TodoFilter } from './type'
+import { Calendar } from '@element-plus/icons-vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { VCheckbox, VDropdown } from '../../components'
+import { VCheckbox, VDropdown, VIcon } from '../../components'
 import { TOOL_RECORD } from '../../router'
 import { TODO_FILTER_EXPIRED, TODO_FILTER_NONE, TODO_FILTER_TODAY, TODO_FILTER_WEEK } from './type'
 
@@ -22,6 +23,10 @@ const router = useRouter()
 function jumpTool(item: { value: string, label: string }): void {
   router.push(`/tool/${item.value}`)
   getCurrentWindow().setTitle(item.label)
+}
+
+function jumpCalendar(): void {
+  router.push('/calendar')
 }
 
 const list = Object.values(TOOL_RECORD).map((x) => {
@@ -51,6 +56,12 @@ function handleExpired(): void {
       <VCheckbox :checked="filter === TODO_FILTER_EXPIRED" @click="handleExpired" />
       <span @click="handleExpired">已过期</span>
     </div>
+    <div class="calendar">
+      <VIcon @click="jumpCalendar">
+        <Calendar />
+      </VIcon>
+    </div>
+    <div class="separate" />
     <div class="tool-list">
       <VDropdown :list="list" @select="jumpTool">
         <span>小工具</span>
@@ -63,7 +74,7 @@ function handleExpired(): void {
 .header-bar {
   display: flex;
   background-color: #f2f5fe;
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
   padding: 10px;
 
@@ -81,6 +92,15 @@ function handleExpired(): void {
   &>span {
     margin-right: 10px;
   }
+}
+
+.calendar {
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.separate {
+  flex: 1;
 }
 
 .tool-list {

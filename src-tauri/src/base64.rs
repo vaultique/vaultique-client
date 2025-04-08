@@ -1,4 +1,4 @@
-use base64::{Engine as _, engine::general_purpose};
+use base64::{engine::general_purpose, Engine as _};
 
 #[derive(Debug)]
 enum Base64DecodeError {
@@ -18,10 +18,10 @@ impl std::fmt::Display for Base64DecodeError {
 #[tauri::command]
 pub fn decode(text: &str) -> String {
     general_purpose::STANDARD
-    .decode(text)
-    .map_err(|_| Base64DecodeError::DecodeError)
-    .and_then(|bytes| String::from_utf8(bytes).map_err(|_| Base64DecodeError::NotUtf8))
-    .unwrap_or_else(|e| e.to_string())
+        .decode(text)
+        .map_err(|_| Base64DecodeError::DecodeError)
+        .and_then(|bytes| String::from_utf8(bytes).map_err(|_| Base64DecodeError::NotUtf8))
+        .unwrap_or_else(|e| e.to_string())
 }
 
 #[tauri::command]

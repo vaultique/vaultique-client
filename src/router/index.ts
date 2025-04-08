@@ -6,6 +6,7 @@ export const TOOL_RECORD: Record<string, { name: string, title: string }> = {
   UUID: { name: 'uuid', title: 'UUID生成' },
   HTTP: { name: 'http', title: 'HTTP测试' },
   WEB_SOCKET: { name: 'web-socket', title: 'WebSocket测试' },
+  CLOCK: { name: 'clock', title: '时钟' },
 }
 
 const routes: RouteRecordRaw[] = [

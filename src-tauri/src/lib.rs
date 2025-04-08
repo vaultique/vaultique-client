@@ -1,16 +1,17 @@
 mod base64;
+mod file;
 mod http;
 mod uuid;
-mod file;
 
 use base64::{decode, encode};
+use file::append_log;
 use http::send_http_request;
 use uuid::uuid_generate;
-use file::append_log;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())

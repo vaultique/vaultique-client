@@ -9,7 +9,7 @@ function jumpToToolList(): void {
 </script>
 
 <template>
-  <div class="header-bar">
+  <div class="header-bar" data-tauri-drag-region>
     <button @click="jumpToToolList">
       首页
     </button>

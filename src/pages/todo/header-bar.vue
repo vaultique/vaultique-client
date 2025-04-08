@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TodoFilter } from './type'
-import { Calendar } from '@element-plus/icons-vue'
+import { Calendar, List } from '@element-plus/icons-vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -27,6 +27,10 @@ function jumpTool(item: { value: string, label: string }): void {
 
 function jumpCalendar(): void {
   router.push('/calendar')
+}
+
+function jumpLog(): void {
+  router.push('/log')
 }
 
 const list = Object.values(TOOL_RECORD).map((x) => {
@@ -59,6 +63,11 @@ function handleExpired(): void {
     <div class="calendar">
       <VIcon @click="jumpCalendar">
         <Calendar />
+      </VIcon>
+    </div>
+    <div class="log">
+      <VIcon @click="jumpLog">
+        <List />
       </VIcon>
     </div>
     <div class="separate" />
@@ -94,7 +103,8 @@ function handleExpired(): void {
   }
 }
 
-.calendar {
+.calendar,
+.log {
   cursor: pointer;
   margin-left: 20px;
 }

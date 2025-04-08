@@ -26,6 +26,10 @@ const routes: RouteRecordRaw[] = [
     path: '/calendar',
     component: () => import('@/pages/calendar/index.vue'),
   },
+  {
+    path: '/log',
+    component: () => import('@/pages/log/index.vue'),
+  },
 ]
 
 Object.values(TOOL_RECORD).forEach((tool) => {

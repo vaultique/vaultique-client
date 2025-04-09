@@ -1,12 +1,15 @@
 import type { Ref } from 'vue'
 import type { Priority, TodoItem } from '../todo/type'
-import { BaseDirectory, readDir, readTextFile } from '@tauri-apps/plugin-fs'
+import { BaseDirectory, readDir, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs'
+import dayjs from 'dayjs'
+import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { TODO_DIR } from '../../global/constant'
 import { validateUuid } from '../../util'
-import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from '../todo/type'
+import { addLog } from '../../util/log'
+import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4, REPEAT_WHEN_DONE } from '../todo/type'
 
-export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<TodoItem[]> } {
+export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<TodoItem[]>, load: () => void, setDone: (uuid: string) => Promise<void> } {
   const todoList = ref<TodoItem[]>([])
   const doneList = ref<TodoItem[]>([])
 
@@ -43,5 +46,35 @@ export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<To
     doneList.value = doneCollect.sort((a: TodoItem, b: TodoItem) => (b.doneTime ?? 0) - (a.doneTime ?? 0))
   }
 
-  return { todoList, doneList }
+  // TODO 抽取公共方法
+  async function setDone(uuid: string): Promise<void> {
+    const item = todoList.value.find(x => x.uuid === uuid)
+    if (item === undefined) {
+      return
+    }
+    item.done = !item.done
+    if (item.done === true) {
+      item.doneTime = dayjs().valueOf()
+    }
+    else {
+      delete item.doneTime
+    }
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `set ${item.title} done` })
+    if (item.done && item.repeat === REPEAT_WHEN_DONE) {
+      const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().startOf('day').add(1, 'day').valueOf() }
+      await add(next)
+    }
+  }
+
+  async function add(item: TodoItem): Promise<void> {
+    const { uuid, title } = item
+    if (typeof title !== 'string' || title.trim() === '') {
+      return
+    }
+    await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
+    await addLog({ module: 'todo', content: `add ${item.title}` })
+  }
+
+  return { todoList, doneList, load, setDone }
 }

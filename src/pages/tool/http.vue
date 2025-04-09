@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { BaseDirectory, exists, mkdir, readDir, readTextFile, remove, writeTextFile } from '@tauri-apps/plugin-fs'
+import { BaseDirectory, readDir, readTextFile, remove, writeTextFile } from '@tauri-apps/plugin-fs'
 import { ref } from 'vue'
+import { HTTP_CACHE_DIR } from '../../global/constant'
 import { sendHttpRequest } from '../../invokes/http'
 import HeaderBar from './header-bar.vue'
 
-const HTTP_HISTORY_CACHE_DIR = 'BaiduSyncdisk\\vaultique\\cache\\http_history'
 const MAX_HISTORY_COUNT = 10
 
 const url = ref<string>('http://192.168.104.117:8099/us-api/user/login')
@@ -19,10 +19,7 @@ const response = ref('')
 
 const historyList = ref<string[]>([])
 
-checkCacheDir()
-  .then(() => {
-    loadCache()
-  })
+loadCache()
 
 async function handleSendHttpRequest(): Promise<void> {
   const res = await sendHttpRequest({
@@ -36,19 +33,12 @@ async function handleSendHttpRequest(): Promise<void> {
   await loadCache()
 }
 
-async function checkCacheDir(): Promise<void> {
-  const exist = await exists(HTTP_HISTORY_CACHE_DIR, { baseDir: BaseDirectory.Document })
-  if (!exist) {
-    await mkdir(HTTP_HISTORY_CACHE_DIR, { recursive: true, baseDir: BaseDirectory.Document })
-  }
-}
-
 async function addCache(cache: string): Promise<void> {
-  await writeTextFile(`${HTTP_HISTORY_CACHE_DIR}\\${new Date().getTime()}`, cache, { baseDir: BaseDirectory.Document })
+  await writeTextFile(`${HTTP_CACHE_DIR}\\${new Date().getTime()}`, cache, { baseDir: BaseDirectory.Document })
 }
 
 async function loadCache(): Promise<void> {
-  const entries = await readDir(HTTP_HISTORY_CACHE_DIR, { baseDir: BaseDirectory.Document })
+  const entries = await readDir(HTTP_CACHE_DIR, { baseDir: BaseDirectory.Document })
   const list = entries
     .filter(x => x.isFile)
     .sort((a, b) => Number.parseInt(b.name) - Number.parseInt(a.name))
@@ -60,7 +50,7 @@ async function loadCache(): Promise<void> {
       removeCollect.push(entry.name)
       break
     }
-    const path = `${HTTP_HISTORY_CACHE_DIR}\\${entry.name}`
+    const path = `${HTTP_CACHE_DIR}\\${entry.name}`
     const content = await readTextFile(path, { baseDir: BaseDirectory.Document })
     collect.push(content)
     count++
@@ -72,7 +62,7 @@ async function loadCache(): Promise<void> {
 
 async function removeCacheList(list: string[]): Promise<void> {
   for await (const name of list) {
-    const path = `${HTTP_HISTORY_CACHE_DIR}\\${name}`
+    const path = `${HTTP_CACHE_DIR}\\${name}`
     await remove(path, { baseDir: BaseDirectory.Document })
   }
 }

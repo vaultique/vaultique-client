@@ -11,7 +11,7 @@ export type Log = {
   content: string
 }
 
-// FIXME use rust to append log
+// TODO do not pass path as param
 export async function addLog(log: Omit<Log, 'time'>): Promise<void> {
   const path = `${await documentDir()}\\${LOG_DIR}\\${dayjs().format('YYYY-MM-DD')}.log`
   const time = dayjs().valueOf()

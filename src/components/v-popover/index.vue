@@ -119,7 +119,7 @@ function generateClassNames(prefix: string, ...args: (string | { label: string, 
       <div v-show="isOpen" ref="contentEl" :class="popoverClass" :style="styles">
         <div v-if="showArrow" ref="arrowEl" data-popper-arrow :class="`${POPOVER_PREFIX}__arrow`" />
         <div :class="contentClass">
-          <slot name="content" :close="close" />
+          <slot name="content" :close="close" :visible="isOpen" />
         </div>
       </div>
     </Transition>

@@ -28,6 +28,16 @@ export function isExpirationToday(expiration: number | undefined): boolean {
   return today === expiration
 }
 
+export function isExpirationTomorrow(expiration: number | undefined): boolean {
+  const today = dayjs().endOf('day').add(1, 'day').valueOf()
+  return today === expiration
+}
+
+export function isExpirationWeekend(expiration: number | undefined): boolean {
+  const today = dayjs().endOf('week').valueOf()
+  return today === expiration
+}
+
 export function isExpirationWeek(expiration: number | undefined): boolean {
   const start = dayjs().weekday(1).startOf('day').valueOf()
   const end = dayjs().weekday(7).endOf('day').valueOf()

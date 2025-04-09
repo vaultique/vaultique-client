@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { Group, Priority, TodoFilter, TodoItem } from './type'
+import type { Group, TodoFilter, TodoItem } from './type'
 import { NScrollbar } from 'naive-ui'
 import hash from 'object-hash'
 import { computed, ref, useTemplateRef } from 'vue'
 import { VPopover } from '../../components'
 import { useClickAway } from '../../hook/popover'
-import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput, TodoOperatePanel } from './component'
+import { GroupAdd, GroupHeader, GroupSubHeader, HeaderBar, TodoCard, TodoDetail, TodoInput } from './component'
 import { isExpirationExpired, isExpirationToday, isExpirationWeek } from './expiration'
-import { useContextmenu, useGroup, useTodo } from './hook'
-import { REPEAT_WHEN_DONE, TODO_FILTER_EXPIRED, TODO_FILTER_NONE, TODO_FILTER_TODAY, TODO_FILTER_WEEK } from './type'
+import { useGroup, useTodo } from './hook'
+import { TODO_FILTER_EXPIRED, TODO_FILTER_NONE, TODO_FILTER_TODAY, TODO_FILTER_WEEK } from './type'
 
 const { list: groupList, add: addGroup, load: loadGroupList, rename: renameGroup } = useGroup()
-const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, setPriority, setExpiration, setRepeat, save } = useTodo()
+const { list: todoList, doneList, add, load, removeItem, setDone, setUnDone, save } = useTodo()
 
 init()
 
@@ -103,46 +103,10 @@ async function handleDetailUpdate(item: TodoItem): Promise<void> {
   await load()
 }
 
-const { visible, styles, item, handleContextMenu, hide } = useContextmenu()
-async function handleSetPriority(p: Priority): Promise<void> {
-  if (item.value === null) {
-    return
-  }
-  await setPriority(item.value.uuid, p)
-  hide()
+async function handleRemove(uuid: string): Promise<void> {
+  await removeItem(uuid)
   await load()
 }
-
-async function handleSetExpiration(expiration: number): Promise<void> {
-  if (item.value === null) {
-    return
-  }
-  await setExpiration(item.value.uuid, expiration)
-  hide()
-  await load()
-}
-
-async function handleSetRepeat(): Promise<void> {
-  if (item.value === null) {
-    return
-  }
-  await setRepeat(item.value.uuid, REPEAT_WHEN_DONE)
-  hide()
-  await load()
-}
-
-async function handleRemoveByContextmenu(): Promise<void> {
-  if (item.value === null) {
-    return
-  }
-  await removeItem(item.value.uuid)
-  hide()
-  await load()
-}
-
-const operatePanelRef = useTemplateRef('operate-panel-ref')
-const operatePanelEl = computed<HTMLElement>(() => operatePanelRef.value?.$el)
-useClickAway(operatePanelEl, hide)
 
 const todoInputRef = useTemplateRef('todo-input-ref')
 const todoInputEl = computed<HTMLElement>(() => todoInputRef.value?.$el)
@@ -162,23 +126,21 @@ useClickAway(todoInputEl, () => {
           <div class="todo-list">
             <template v-for="n in group.todoList" :key="n.hash">
               <VPopover arrow placement="right-start">
-                <TodoCard :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" />
-                <template #content>
-                  <TodoDetail :item="n" @update="handleDetailUpdate" />
+                <TodoCard :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" />
+                <template #content="{ visible }">
+                  <TodoDetail :visible="visible" :item="n" @update="handleDetailUpdate" @remove="handleRemove" />
                 </template>
               </VPopover>
             </template>
           </div>
           <GroupSubHeader :count="group.doneSize" />
           <div class="todo-list">
-            <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" @contextmenu="handleContextMenu" />
+            <TodoCard v-for="n in group.doneList" :key="n.uuid" :item="n" @set-done="handleSetDone" @set-un-done="handleSetUnDone" />
           </div>
         </NScrollbar>
       </div>
       <GroupAdd @submit="handleAddGroup" />
     </section>
-
-    <TodoOperatePanel v-show="visible" ref="operate-panel-ref" :checked="true" :style="styles" @set-priority="handleSetPriority" @set-expiration="handleSetExpiration" @set-repeat="handleSetRepeat" @remove="handleRemoveByContextmenu" />
   </div>
 </template>
 

@@ -15,6 +15,6 @@ export type Log = {
 export async function addLog(log: Omit<Log, 'time'>): Promise<void> {
   const path = `${await documentDir()}\\${LOG_DIR}\\${dayjs().format('YYYY-MM-DD')}.log`
   const time = dayjs().valueOf()
-  const content = `${dayjs(time).format('YYYY-MM-DD HH:mm:ss')} [${log.module}] ${log.content}\n`
+  const content = `[${dayjs(time).format('YYYY-MM-DD')}] [${dayjs(time).format('HH:mm:ss')}] [${log.module}] ${log.content}\n`
   await appendLog(path, content)
 }

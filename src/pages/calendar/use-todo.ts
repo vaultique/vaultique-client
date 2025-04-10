@@ -60,7 +60,7 @@ export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<To
       delete item.doneTime
     }
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} done` })
+    await addLog({ module: 'todo', content: `完成待办: ${item.title}` })
     if (item.done && item.repeat === REPEAT_WHEN_DONE) {
       const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().endOf('day').add(1, 'day').valueOf() }
       await add(next)
@@ -73,7 +73,7 @@ export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<To
       return
     }
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `add ${item.title}` })
+    await addLog({ module: 'todo', content: `新增待办: ${item.title}` })
   }
 
   return { todoList, doneList, load, setDone }

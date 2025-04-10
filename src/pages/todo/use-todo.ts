@@ -17,7 +17,7 @@ export default function useTodo() {
       return
     }
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `add ${item.title}` })
+    await addLog({ module: 'todo', content: `新增待办: ${item.title}` })
   }
 
   async function load(): Promise<void> {
@@ -68,7 +68,7 @@ export default function useTodo() {
       delete item.doneTime
     }
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} done` })
+    await addLog({ module: 'todo', content: `完成待办: ${item.title}` })
     if (item.done && item.repeat === REPEAT_WHEN_DONE) {
       const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().endOf('day').add(1, 'day').valueOf() }
       await add(next)
@@ -82,7 +82,7 @@ export default function useTodo() {
     }
     item.done = !item.done
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} undone` })
+    await addLog({ module: 'todo', content: `取消完成待办: ${item.title}` })
   }
 
   async function setPriority(uuid: string, priority: Priority): Promise<void> {
@@ -92,7 +92,7 @@ export default function useTodo() {
     }
     item.priority = priority
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} priority ${priority}` })
+    await addLog({ module: 'todo', content: `调整待办优先级为${item.priority}: ${item.title}` })
   }
 
   async function setExpiration(uuid: string, expiration: number): Promise<void> {
@@ -102,7 +102,7 @@ export default function useTodo() {
     }
     item.expiration = expiration
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} expiration ${expiration}` })
+    await addLog({ module: 'todo', content: `设置待办过期时间为${dayjs(expiration).format('YYYY-MM-DD')}: ${item.title}` })
   }
 
   async function setRepeat(uuid: string, repeat: Repeat): Promise<void> {
@@ -112,12 +112,12 @@ export default function useTodo() {
     }
     item.repeat = repeat
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `set ${item.title} repeat ${repeat}` })
+    await addLog({ module: 'todo', content: `设置待办为重复任务: ${item.title}` })
   }
 
   async function save(item: TodoItem): Promise<void> {
     await writeTextFile(`${TODO_DIR}\\${item.uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
-    await addLog({ module: 'todo', content: `change ${item.title}` })
+    await addLog({ module: 'todo', content: `修改待办名称: ${item.title}` })
   }
 
   async function trans(): Promise<void> {

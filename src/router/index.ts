@@ -4,6 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 export const TOOL_RECORD: Record<string, { name: string, title: string }> = {
   BASE64: { name: 'base64', title: 'base64编解码' },
   UUID: { name: 'uuid', title: 'UUID生成' },
+  TIMESTAMP: { name: 'timestamp', title: '时间戳' },
   HTTP: { name: 'http', title: 'HTTP测试' },
   WEB_SOCKET: { name: 'web-socket', title: 'WebSocket测试' },
   CLOCK: { name: 'clock', title: '时钟' },

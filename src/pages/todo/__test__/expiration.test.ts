@@ -4,6 +4,7 @@ import { isExpirationToday } from '../expiration'
 describe('test isExpirationToday', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    vi.setSystemTime('2025-04-15 12:20:10')
   })
 
   afterEach(() => {
@@ -11,25 +12,16 @@ describe('test isExpirationToday', () => {
   })
 
   it('test undefined', () => {
-    const date = new Date(2025, 3, 15, 13)
-    vi.setSystemTime(date)
-
     const expiration = undefined
     expect(isExpirationToday(expiration)).toBe(false)
   })
 
   it('test not today', () => {
-    const date = new Date(2025, 3, 15, 13)
-    vi.setSystemTime(date)
-
     const expiration = 1744276364799
     expect(isExpirationToday(expiration)).toBe(false)
   })
 
   it('test today', () => {
-    const date = new Date(2025, 3, 15, 13)
-    vi.setSystemTime(date)
-
     const expiration = 1744646400000
     expect(isExpirationToday(expiration)).toBe(true)
   })

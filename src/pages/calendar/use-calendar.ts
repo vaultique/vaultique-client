@@ -10,6 +10,7 @@ export type Cell = {
   date: number
   day: number
   inMonth: boolean
+  today: boolean
   start: number
   end: number
 }
@@ -79,13 +80,7 @@ function generateWeekList(date: Dayjs): Cell[] {
   const list: Cell[] = []
   for (let i = 1; i <= 7; i++) {
     date = date.day(i)
-    const cell: Cell = {
-      date: date.date(),
-      day: date.day(),
-      start: date.startOf('day').valueOf(),
-      end: date.endOf('day').valueOf(),
-      inMonth: true,
-    }
+    const cell: Cell = generateCell(date, true)
     list.push(cell)
   }
   return list
@@ -97,38 +92,31 @@ function generateMonthList(date: Dayjs): Cell[] {
   date = date.startOf('month')
   const m = date.month()
   while (date.month() === m) {
-    const cell: Cell = {
-      date: date.date(),
-      day: date.day(),
-      start: date.startOf('day').valueOf(),
-      end: date.endOf('day').valueOf(),
-      inMonth: true,
-    }
+    const cell: Cell = generateCell(date, true)
     list.push(cell)
     date = date.add(1, 'day')
   }
   while (list.at(-1)?.day !== 0) {
-    const cell: Cell = {
-      date: date.date(),
-      day: date.day(),
-      start: date.startOf('day').valueOf(),
-      end: date.endOf('day').valueOf(),
-      inMonth: false,
-    }
+    const cell: Cell = generateCell(date, false)
     list.push(cell)
     date = date.add(1, 'day')
   }
   date = dayjs().month(month).startOf('month').subtract(1, 'day')
   while (list[0].day !== 1) {
-    const cell: Cell = {
-      date: date.date(),
-      day: date.day(),
-      start: date.startOf('day').valueOf(),
-      end: date.endOf('day').valueOf(),
-      inMonth: false,
-    }
+    const cell: Cell = generateCell(date, false)
     list.unshift(cell)
     date = date.subtract(1, 'day')
   }
   return list
+}
+
+function generateCell(date: Dayjs, inMonth: boolean): Cell {
+  return {
+    date: date.date(),
+    day: date.day(),
+    start: date.startOf('day').valueOf(),
+    end: date.endOf('day').valueOf(),
+    inMonth,
+    today: date.isSame(dayjs(), 'day'),
+  }
 }

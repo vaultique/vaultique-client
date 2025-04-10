@@ -54,7 +54,7 @@ function handleSwitch(m: CalendarMode): void {
       </div>
     </div>
     <div class="calendar-list">
-      <div v-for="item in list" :key="`${item.date}--${item.day}`" class="body-cell" :class="{ 'current-month': item.inMonth }">
+      <div v-for="item in list" :key="`${item.date}--${item.day}`" class="body-cell" :class="{ 'current-month': item.inMonth, 'current-day': item.today }">
         <div>{{ item.date }}</div>
         <template v-for="todo in item.todo" :key="todo.uuid">
           <VPopover arrow>
@@ -167,5 +167,9 @@ function handleSwitch(m: CalendarMode): void {
 
 .current-month {
   color: #000000;
+}
+
+.current-day {
+  background-color: #2080f050;
 }
 </style>

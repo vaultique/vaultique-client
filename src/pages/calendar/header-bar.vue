@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CalendarMode } from './use-calendar'
+import type { CalendarMode } from '../../global'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { CALENDAR_MODE_MONTH, CALENDAR_MODE_WEEK } from './use-calendar'
+import { CALENDAR_MODE_MONTH, CALENDAR_MODE_WEEK } from '../../global'
 
 const props = defineProps<{
   month: string

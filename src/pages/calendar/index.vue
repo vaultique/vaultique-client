@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import type { CalendarMode } from '../../global'
 import type { Priority, TodoItem } from '../todo/type'
-import type { CalendarMode, Cell } from './use-calendar'
-import { computed, ref } from 'vue'
+import type { Cell } from './use-calendar'
+import { computed } from 'vue'
 import { VPopover } from '../../components'
+import { useStore } from '../../global'
 import { PRIORITY_P1, PRIORITY_P2, PRIORITY_P3, PRIORITY_P4 } from '../todo/type'
 import HeaderBar from './header-bar.vue'
-import useCalendar, { CALENDAR_MODE_MONTH } from './use-calendar'
+import useCalendar from './use-calendar'
 import useTodo from './use-todo'
 
+const store = useStore()
+const { setCalendarMode } = store
+
 const WEEK_HEAD: string[] = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-const mode = ref<CalendarMode>(CALENDAR_MODE_MONTH)
+const mode = computed<CalendarMode>(() => store.calendarMode)
 const { list: cellList, monthText, weekText, nextMonth, previewMonth, nextWeek, previewWeek } = useCalendar(mode)
 const { todoList, doneList, load, setDone } = useTodo()
 
@@ -41,7 +46,7 @@ async function handleSetDone(uuid: string): Promise<void> {
 }
 
 function handleSwitch(m: CalendarMode): void {
-  mode.value = m
+  setCalendarMode(m)
 }
 </script>
 

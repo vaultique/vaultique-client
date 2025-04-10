@@ -1,8 +1,10 @@
 import type { Dayjs } from 'dayjs'
 import type { ComputedRef, Ref } from 'vue'
+import type { CalendarMode } from '../../global'
 import dayjs from 'dayjs'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { computed, onUnmounted, ref, watch } from 'vue'
+import { CALENDAR_MODE_MONTH, CALENDAR_MODE_WEEK } from '../../global'
 
 dayjs.extend(weekOfYear)
 
@@ -15,14 +17,9 @@ export type Cell = {
   end: number
 }
 
-export const CALENDAR_MODE_WEEK = 0 as const
-export const CALENDAR_MODE_MONTH = 1 as const
-
-export type CalendarMode = typeof CALENDAR_MODE_WEEK | typeof CALENDAR_MODE_MONTH
-
 type Fn = () => void
 
-export default function useCalendar(mode: Ref<CalendarMode>): {
+export default function useCalendar(mode: ComputedRef<CalendarMode>): {
   list: Ref<Cell[]>
   monthText: ComputedRef<string>
   weekText: ComputedRef<string>

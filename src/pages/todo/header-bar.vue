@@ -83,7 +83,6 @@ function handleExpired(): void {
 .header-bar {
   display: flex;
   background-color: #f2f5fe;
-  // justify-content: space-between;
   align-items: center;
   padding: 10px;
 

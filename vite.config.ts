@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
@@ -34,5 +35,17 @@ export default defineConfig(async () => ({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  test: {
+    exclude: [
+      '**/node_modules/**',
+      '**/src-tauri/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*',
+    ],
+    environment: 'jsdom',
+    globals: true,
   },
 }))

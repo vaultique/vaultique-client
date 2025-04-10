@@ -24,8 +24,12 @@ export function convertExpiration2Text(expiration: number | undefined): string {
 }
 
 export function isExpirationToday(expiration: number | undefined): boolean {
-  const today = dayjs().endOf('day').valueOf()
-  return today === expiration
+  if (expiration === undefined) {
+    return false
+  }
+  const start = dayjs().startOf('day').valueOf()
+  const end = dayjs().endOf('day').valueOf()
+  return start <= expiration && expiration <= end
 }
 
 export function isExpirationTomorrow(expiration: number | undefined): boolean {

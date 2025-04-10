@@ -31,6 +31,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run ESLint
         run: pnpm test:lint
+      - name: Run Unit Test
+        run: pnpm test:unit
       - name: Build Tauri
         uses: tauri-apps/tauri-action@v0
         env:

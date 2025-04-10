@@ -62,7 +62,7 @@ export default function useTodo(): { todoList: Ref<TodoItem[]>, doneList: Ref<To
     await writeTextFile(`${TODO_DIR}\\${uuid}`, JSON.stringify(item), { baseDir: BaseDirectory.Document })
     await addLog({ module: 'todo', content: `set ${item.title} done` })
     if (item.done && item.repeat === REPEAT_WHEN_DONE) {
-      const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().startOf('day').add(1, 'day').valueOf() }
+      const next: TodoItem = { ...item, uuid: uuidv4(), done: false, expiration: dayjs().endOf('day').add(1, 'day').valueOf() }
       await add(next)
     }
   }

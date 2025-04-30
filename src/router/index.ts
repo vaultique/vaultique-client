@@ -31,6 +31,10 @@ const routes: RouteRecordRaw[] = [
     path: '/log',
     component: () => import('@/pages/log/index.vue'),
   },
+  {
+    path: '/knowledge-graph',
+    component: () => import('@/pages/knowledge-graph/index.vue'),
+  },
 ]
 
 Object.values(TOOL_RECORD).forEach((tool) => {

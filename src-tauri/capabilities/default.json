@@ -17,6 +17,9 @@
     "core:window:allow-set-position",
     "notification:default",
     "store:default",
+    "sql:default",
+    "sql:allow-execute",
+    "sql:allow-select",
     {
       "identifier": "fs:allow-exists",
       "allow": [
@@ -77,7 +80,7 @@
       "identifier": "http:default",
       "allow": [
         {
-          "url": "http://192.168.104.117:8099"
+          "url": "http://192.168.*"
         }
       ]
     }

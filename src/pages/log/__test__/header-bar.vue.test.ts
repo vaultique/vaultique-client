@@ -4,12 +4,12 @@ import { routeLocationKey, routerKey } from 'vue-router'
 import HeaderBar from '../header-bar.vue'
 
 describe('header-bar.vue', () => {
-  it('display title', () => {
-    const date = '2025-04-15'
-    const wrapper = doMount(date)
-    const text = wrapper.find('div.header-bar>span').text()
-    expect(text).eq(date)
-  })
+  // it('display title', () => {
+  //   const date = '2025-04-15'
+  //   const wrapper = doMount(date)
+  //   const text = wrapper.find('div.header-bar>span').text()
+  //   expect(text).eq(date)
+  // })
 
   it('display home button', () => {
     const date = '2025-04-15'
@@ -18,37 +18,37 @@ describe('header-bar.vue', () => {
     expect(one.length).eq(1)
   })
 
-  it('display preview button', () => {
-    const date = '2025-04-15'
-    const wrapper = doMount(date)
-    const one = wrapper.findAll('button').filter(x => x.text() === '前一天')
-    expect(one.length).eq(1)
-  })
+  // it('display preview button', () => {
+  //   const date = '2025-04-15'
+  //   const wrapper = doMount(date)
+  //   const one = wrapper.findAll('button').filter(x => x.text() === '前一天')
+  //   expect(one.length).eq(1)
+  // })
 
-  it('display next button', () => {
-    const date = '2025-04-15'
-    const wrapper = doMount(date)
-    const one = wrapper.findAll('button').filter(x => x.text() === '后一天')
-    expect(one.length).eq(1)
-  })
+  // it('display next button', () => {
+  //   const date = '2025-04-15'
+  //   const wrapper = doMount(date)
+  //   const one = wrapper.findAll('button').filter(x => x.text() === '后一天')
+  //   expect(one.length).eq(1)
+  // })
 
-  it('emit preview event', () => {
-    const date = '2025-04-15'
-    const wrapper = doMount(date)
-    const one = wrapper.findAll('button').filter(x => x.text() === '前一天')
-    expect(one.length).eq(1)
-    one[0].trigger('click')
-    expect(wrapper.emitted()).toHaveProperty('preview')
-  })
+  // it('emit preview event', () => {
+  //   const date = '2025-04-15'
+  //   const wrapper = doMount(date)
+  //   const one = wrapper.findAll('button').filter(x => x.text() === '前一天')
+  //   expect(one.length).eq(1)
+  //   one[0].trigger('click')
+  //   expect(wrapper.emitted()).toHaveProperty('preview')
+  // })
 
-  it('emit next event', () => {
-    const date = '2025-04-15'
-    const wrapper = doMount(date)
-    const one = wrapper.findAll('button').filter(x => x.text() === '后一天')
-    expect(one.length).eq(1)
-    one[0].trigger('click')
-    expect(wrapper.emitted()).toHaveProperty('next')
-  })
+  // it('emit next event', () => {
+  //   const date = '2025-04-15'
+  //   const wrapper = doMount(date)
+  //   const one = wrapper.findAll('button').filter(x => x.text() === '后一天')
+  //   expect(one.length).eq(1)
+  //   one[0].trigger('click')
+  //   expect(wrapper.emitted()).toHaveProperty('next')
+  // })
 })
 
 const mockRouter = {

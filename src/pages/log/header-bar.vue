@@ -1,30 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-
-const props = defineProps<{
-  date: string
-}>()
-
-const emit = defineEmits<{
-  preview: []
-  next: []
-}>()
-
-const date = computed<string>(() => props.date)
 
 const router = useRouter()
 
 function jumpToToolList(): void {
   router.back()
-}
-
-function handlePreview(): void {
-  emit('preview')
-}
-
-function handleNext(): void {
-  emit('next')
 }
 </script>
 
@@ -32,13 +12,6 @@ function handleNext(): void {
   <div class="header-bar" data-tauri-drag-region>
     <button @click="jumpToToolList">
       首页
-    </button>
-    <button @click="handlePreview">
-      前一天
-    </button>
-    <span>{{ date }}</span>
-    <button @click="handleNext">
-      后一天
     </button>
   </div>
 </template>

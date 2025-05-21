@@ -2,12 +2,12 @@
 import HeaderBar from './header-bar.vue'
 import useLog from './use-log'
 
-const { list, date, preview, next } = useLog()
+const { list } = useLog()
 </script>
 
 <template>
   <div class="log-layout">
-    <HeaderBar :date="date" @preview="preview" @next="next" />
+    <HeaderBar />
     <div class="log-list">
       <div v-for="n in list" :key="n">
         {{ n }}

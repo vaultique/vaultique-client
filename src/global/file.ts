@@ -1,6 +1,5 @@
 import type { Group } from '../pages/todo/type'
 import { BaseDirectory, exists, mkdir, writeTextFile } from '@tauri-apps/plugin-fs'
-import dayjs from 'dayjs'
 import { DEFAULT_GROUP_NAME, DEFAULT_GROUP_UUID, GROUP_FILE_NAME } from '../pages/todo/constant'
 import { DOCUMENT_DIR, HTTP_CACHE_DIR, KNOWLEDGE_GRAPH_DIR, KNOWLEDGE_GRAPH_FILE_EDGE, KNOWLEDGE_GRAPH_FILE_NODE, LOG_DIR, TODO_DIR } from './constant'
 
@@ -59,11 +58,6 @@ export default function useFile(): { init: () => Promise<void> } {
     const exist = await exists(LOG_DIR, { baseDir: BaseDirectory.Document })
     if (!exist) {
       await mkdir(LOG_DIR, { recursive: true, baseDir: BaseDirectory.Document })
-    }
-    const path = `${LOG_DIR}\\${dayjs().format('YYYY-MM-DD')}.log`
-    const fileExist = await exists(path, { baseDir: BaseDirectory.Document })
-    if (!fileExist) {
-      await writeTextFile(path, '', { baseDir: BaseDirectory.Document })
     }
   }
 

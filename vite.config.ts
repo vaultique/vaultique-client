@@ -1,8 +1,10 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+/// <reference types="vitest" />
+import path from 'node:path'
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
-// @ts-expect-error process is a nodejs global
-const host = process.env.TAURI_DEV_HOST;
+// eslint-disable-next-line node/prefer-global/process
+const host = process.env.TAURI_DEV_HOST
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -19,14 +21,31 @@ export default defineConfig(async () => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
+          protocol: 'ws',
           host,
           port: 1421,
         }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
-}));
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  test: {
+    exclude: [
+      '**/node_modules/**',
+      '**/src-tauri/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*',
+    ],
+    environment: 'jsdom',
+    globals: true,
+  },
+}))

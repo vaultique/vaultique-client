@@ -1,0 +1,46 @@
+name: Release Branch Build
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-msvc
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.7.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+      - name: Run ESLint
+        run: pnpm test:lint
+      - name: Run Unit Test
+        run: pnpm test:unit
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Windows Build ${{ github.head_ref }}'
+          target: x86_64-pc-windows-msvc
+          publish: true
+          releaseDraft: false
+          artifactName: 'app_${GITHUB_RUN_ID}.msi'

@@ -20,7 +20,6 @@ function generate(): Node {
 function handleSubmit(): void {
   emit('submit', node.value)
 }
-
 </script>
 
 <template>
@@ -46,7 +45,9 @@ function handleSubmit(): void {
       <input v-model.number="node.r">
     </div>
     <div>
-      <button @click="handleSubmit">确认</button>
+      <button @click="handleSubmit">
+        确认
+      </button>
       <button @click="emit('cancel')">
         取消
       </button>

@@ -6,7 +6,7 @@ use std::path::Path;
 use tauri::State;
 
 const BASE_DIR: &str = "Nutstore";
-const APP_DIR: &str = "vaultique_test";
+const APP_DIR: &str = "vaultique";
 const MODULE_DIR: &str = "log";
 const LOG_FILE_NAME: &str = "log.log";
 
@@ -15,7 +15,6 @@ pub fn append_log(text: &str, app_path: State<'_, AppPath>) -> Result<(), String
     // 获取应用程序的路径
     let path = get_log_file_path(app_path);
     let _check = check_and_create_log_file(&path);
-
     let mut file = OpenOptions::new()
         .append(true)
         .open(&path)

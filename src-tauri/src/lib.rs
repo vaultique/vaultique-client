@@ -34,7 +34,7 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-use std::sync::Arc;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 pub struct AppPath(pub Arc<PathBuf>);

@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { Node } from './type'
 import type { ContextAction } from './use-context'
 import { onMounted, ref } from 'vue'
 import { ContextMenu, HeaderBar, NodeForm } from './component'
 import { MAP_HEIGHT, MAP_WIDTH } from './constant'
 import { useData, useDraw, useGraph } from './hook'
 import { CONTEXT_ACTION_NODE_ADD } from './use-context'
-import { Node } from './type'
 
 const canvasEl = ref<HTMLCanvasElement>()
 

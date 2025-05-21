@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { GraphData } from './type'
 import { NODE_ITEM_SIZE } from './use-data'
 

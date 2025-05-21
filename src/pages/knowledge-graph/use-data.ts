@@ -52,9 +52,9 @@ export default function useData() {
     await load()
   }
 
-  async function addEdge() {
+  // async function addEdge() {
 
-  }
+  // }
 
   async function removeNode(uuid: string) {
     const i = nodeList.value.findIndex(x => x.uuid === uuid)
@@ -77,9 +77,9 @@ export default function useData() {
     await load()
   }
 
-  async function editNode() {
+  // async function editNode() {
 
-  }
+  // }
 
   return { nodeList, edgeList, graph, load, init, addNode, removeNode, move: debounce(move, 1000) }
 }

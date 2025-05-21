@@ -1,7 +1,8 @@
+import type { Model } from './util'
 import { ref } from 'vue'
 import { MAP_HEIGHT, MAP_WIDTH } from './constant'
-import { useConfig, useContext, useDraw } from './hook'
-import { Model, transColor2ModelIndex } from './util'
+import { useContext } from './hook'
+import { transColor2ModelIndex } from './util'
 
 export default function useGraph() {
   // 画布
@@ -12,8 +13,8 @@ export default function useGraph() {
   const osCanvas = ref<OffscreenCanvas | null>(null)
   const osCtx = ref<OffscreenCanvasRenderingContext2D | null>(null)
 
-  const { movingMap, scalingMapByOffsetCoordinate } = useConfig(0, 0)
-  const { drawNodeList } = useDraw(ctx, osCtx)
+  // const { scalingMapByOffsetCoordinate } = useConfig(0, 0)
+  // const { drawNodeList } = useDraw(ctx, osCtx)
   const { visible, x, y, actionList, mapContext } = useContext()
 
   // canvas上下文初始化
@@ -42,38 +43,38 @@ export default function useGraph() {
         return
       }
       const { offsetX, offsetY } = e
-      const result = findNodeOrLineByCoordinate( osCtx.value, offsetX, offsetY)
+      const result = findNodeOrLineByCoordinate(osCtx.value, offsetX, offsetY)
 
       console.warn(result)
     })
 
-    canvas.value.addEventListener('mousemove', (e: MouseEvent) => { })
+    canvas.value.addEventListener('mousemove', () => { })
 
-    canvas.value.addEventListener('mouseup', (e: MouseEvent) => { })
+    canvas.value.addEventListener('mouseup', () => { })
 
-    canvas.value.addEventListener('wheel', (e: WheelEvent) => { })
+    canvas.value.addEventListener('wheel', () => { })
   }
 
   // 滚轮事件监听 画布的缩放
-  function handleScale() {
-    let timer: number | undefined
-    return (e: WheelEvent) => {
-      const { deltaY, offsetX, offsetY } = e
-      if (typeof e.deltaY !== 'number' || e.deltaY === 0)
-        return
-      scalingMapByOffsetCoordinate(deltaY, offsetX, offsetY)
-      if (timer !== undefined) {
-        clearTimeout(timer)
-        timer = undefined
-      }
-      timer = window.setTimeout(() => {
-        // emitter.emit('mapScaleDown')
-        // TODO draw
-        window.clearTimeout(timer)
-        timer = undefined
-      }, 500)
-    }
-  }
+  // function handleScale() {
+  //   let timer: number | undefined
+  //   return (e: WheelEvent) => {
+  //     const { deltaY, offsetX, offsetY } = e
+  //     if (typeof e.deltaY !== 'number' || e.deltaY === 0)
+  //       return
+  //     scalingMapByOffsetCoordinate(deltaY, offsetX, offsetY)
+  //     if (timer !== undefined) {
+  //       clearTimeout(timer)
+  //       timer = undefined
+  //     }
+  //     timer = window.setTimeout(() => {
+  //       // emitter.emit('mapScaleDown')
+  //       // TODO draw
+  //       window.clearTimeout(timer)
+  //       timer = undefined
+  //     }, 500)
+  //   }
+  // }
 
   return { ctx, osCtx, visible, x, y, actionList, initContext }
 }
